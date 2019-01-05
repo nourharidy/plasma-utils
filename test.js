@@ -1,4 +1,4 @@
-const TransferRecord = require('./src/serialization').TransferRecord
+const TransferRecord = require('./src/serialization/serialization').TransferRecord
 
 /*
 const tr = new TransferRecord({
