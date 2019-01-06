@@ -33,7 +33,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     return parsed
   }
 
-  getBranch (index) {
+  getProof (index) {
     if (index >= this.levels[0].length || index < 0) {
       throw new Error('Invalid leaf index')
     }

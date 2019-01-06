@@ -1,4 +1,3 @@
-/* global describe it */
 const assert = require('chai').assert
 
 const PlasmaMerkleSumTree = require('../../src/sum-tree/plasma-sum-tree')
@@ -64,12 +63,24 @@ describe('PlasmaMerkleSumTree', () => {
     const root = tree.root()
     assert.strictEqual(root.data, 'b3498ac522c72d090ef8bcbe4b50df59676fd9588f46a0139029039598d00617' + 'ffffffffffffffffffffffffffffffff')
   })
-  it('should verify a random proof', () => {
+  describe('checkProof', () => {
     const txs = txutils.getSequentialTxs(100)
     const tree = new PlasmaMerkleSumTree(txs)
     const index = Math.floor(Math.random() * 100)
-    const proof = tree.getBranch(index)
-    const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], proof, tree.root())
-    assert.isTrue(isValid)
+    const proof = tree.getProof(index)
+    it('should verify a random proof', () => {
+      const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], proof, tree.root())
+      assert.isTrue(isValid)
+    })
+    it('should not verify a proof with an invalid index', () => {
+      const isValid = PlasmaMerkleSumTree.checkInclusion(index + 1, txs[index], proof, tree.root())
+      assert.isFalse(isValid)
+    })
+    it('should not verify a proof with an invalid element', () => {
+      let invalidProof = tree.getProof(index)
+      invalidProof.pop() // Remove an element
+      const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], invalidProof, tree.root())
+      assert.isFalse(isValid)
+    })
   })
 })

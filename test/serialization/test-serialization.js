@@ -29,52 +29,58 @@ const decodedTransaction = {
 }
 
 describe('Serialization', () => {
-  it('should correctly encode a TransferRecord', () => {
-    const tr = new TransferRecord(decodedTransferRecord)
-    assert.strictEqual(encodedTransferRecord, tr.encoded, 'transfer was encoded correctly')
+  describe('TransferRecord', () => {
+    it('should be correctly encoded', () => {
+      const tr = new TransferRecord(decodedTransferRecord)
+      assert.strictEqual(encodedTransferRecord, tr.encoded, 'transfer was encoded correctly')
+    })
+    it('should be correctly decoded', () => {
+      const tr = new TransferRecord(encodedTransferRecord)
+      assert.deepEqual(decodedTransferRecord, tr.decoded, 'transfer was decoded correctly')
+    })
+    it('should throw if trying to create a TransferRecord with an invalid address', () => {
+      assert.throws(() => {
+        new TransferRecord({
+          ...decodedTransferRecord,
+          ...{ sender: 'This is not a valid Ethereum address' }
+        })
+      }, 'Address must be a valid Ethereum address', 'error was thrown')
+    })
+    it('should throw if trying to create a TransferRecord with an invalid integer parameter', () => {
+      assert.throws(() => {
+        new TransferRecord({
+          ...decodedTransferRecord,
+          ...{ token: 99999999999 }
+        })
+      }, 'Invalid ByteArray length', 'error was thrown')
+    })
   })
-  it('should correctly decode a TransferRecord', () => {
-    const tr = new TransferRecord(encodedTransferRecord)
-    assert.deepEqual(decodedTransferRecord, tr.decoded, 'transfer was decoded correctly')
+  describe('Signature', () => {
+    it('should be correctly encoded', () => {
+      const sig = new Signature(decodedSignature)
+      assert.strictEqual(encodedSignature, sig.encoded, 'signature was encoded correctly')
+    })
+    it('should be correctly decoded', () => {
+      const sig = new Signature(encodedSignature)
+      assert.deepEqual(decodedSignature, sig.decoded, 'signature was decoded correctly')
+    })
+    it('should throw if trying to create a Signature with an invalid parameter', () => {
+      assert.throws(() => {
+        new Signature({
+          ...decodedSignature,
+          ...{ v: 'deadbeef' }
+        })
+      }, 'Invalid ByteArray length', 'error was thrown')
+    })
   })
-  it('should correctly encode a Signature', () => {
-    const sig = new Signature(decodedSignature)
-    assert.strictEqual(encodedSignature, sig.encoded, 'signature was encoded correctly')
-  })
-  it('should correctly decode a Signature', () => {
-    const sig = new Signature(encodedSignature)
-    assert.deepEqual(decodedSignature, sig.decoded, 'signature was decoded correctly')
-  })
-  it('should correctly encode a Transaction', () => {
-    const tx = new Transaction(decodedTransaction)
-    assert.strictEqual(encodedTransaction, tx.encoded, 'transaction was encoded correctly')
-  })
-  it('should correctly decode a Transaction', () => {
-    const tx = new Transaction(encodedTransaction)
-    assert.deepEqual(decodedTransaction, tx.decoded, 'transaction was decoded correctly')
-  })
-  it('should throw if trying to create a TransferRecord with an invalid address', () => {
-    assert.throws(() => {
-      new TransferRecord({
-        ...decodedTransferRecord,
-        ...{ sender: 'This is not a valid Ethereum address' }
-      })
-    }, 'Address must be a valid Ethereum address', 'error was thrown')
-  })
-  it('should throw if trying to create a TransferRecord with an invalid integer parameter', () => {
-    assert.throws(() => {
-      new TransferRecord({
-        ...decodedTransferRecord,
-        ...{ token: 99999999999 }
-      })
-    }, 'Invalid ByteArray length', 'error was thrown')
-  })
-  it('should throw if trying to create a Signature with an invalid parameter', () => {
-    assert.throws(() => {
-      new Signature({
-        ...decodedSignature,
-        ...{ v: 'deadbeef' }
-      })
-    }, 'Invalid ByteArray length', 'error was thrown')
+  describe('Transaction', () => {
+    it('should be correctly encoded', () => {
+      const tx = new Transaction(decodedTransaction)
+      assert.strictEqual(encodedTransaction, tx.encoded, 'transaction was encoded correctly')
+    })
+    it('should be correctly decoded', () => {
+      const tx = new Transaction(encodedTransaction)
+      assert.deepEqual(decodedTransaction, tx.decoded, 'transaction was decoded correctly')
+    })
   })
 })
