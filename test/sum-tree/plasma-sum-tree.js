@@ -1,40 +1,75 @@
 /* global describe it */
 const assert = require('chai').assert
+
 const PlasmaMerkleSumTree = require('../../src/sum-tree/plasma-sum-tree')
-const TS = require('../../src/transaction-serialization')
-const DT = require('../dummy-tx-utils')
+const Transaction = require('../../src/serialization').models.Transaction
+const txutils = require('../tx-utils')
 
-const tr1 = new TS.TR(['0x43aaDF3d5b44290385fe4193A1b13f15eF3A4FD5', '0xa12bcf1159aa01c739269391ae2d0be4037259f3', 0, 2, 3, 4])
-const tr2 = new TS.TR(['0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8', '0xa12bcf1159aa01c739269391ae2d0be4037259f4', 0, 6, 7, 5])
-const tr3 = new TS.TR(['0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8', '0xa12bcf1159aa01c739269391ae2d0be4037259f4', 1, 100, 108, 5])
-const sig = new TS.Sig([12345, 56789, 901234])
-const TX1 = new TS.Transaction([tr1], [sig])
-const TX2 = new TS.Transaction([tr2], [sig])
-const TX3 = new TS.Transaction([tr3], [sig])
-TX1.TRIndex = TX2.TRIndex = TX3.TRIndex = 0
+const signature = {
+  v: '1b',
+  r: 'd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c042',
+  s: '24e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
+}
+const tx1 = new Transaction({
+  transfer: {
+    sender: '0x43aaDF3d5b44290385fe4193A1b13f15eF3A4FD5',
+    recipient: '0xa12bcf1159aa01c739269391ae2d0be4037259f3',
+    token: 0,
+    start: 2,
+    end: 3,
+    block: 5
+  },
+  signature: signature
+})
+const tx2 = new Transaction({
+  transfer: {
+    sender: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+    recipient: '0xa12bcf1159aa01c739269391ae2d0be4037259f4',
+    token: 0,
+    start: 6,
+    end: 7,
+    block: 5
+  },
+  signature: signature
+})
+const tx3 = new Transaction({
+  transfer: {
+    sender: '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8',
+    recipient: '0xa12bcf1159aa01c739269391ae2d0be4037259f4',
+    token: 1,
+    start: 100,
+    end: 108,
+    block: 5
+  },
+  signature: signature
+})
 
-describe('PlasmaMerkleSumTree', function () {
-  it('should return undefined for an empty tree', function () {
+describe('PlasmaMerkleSumTree', () => {
+  it('should return undefined for an empty tree', () => {
     const tree = new PlasmaMerkleSumTree()
-    assert.strictEqual(tree.root(), undefined)
+    assert.strictEqual(tree.root(), undefined, 'root is undefined')
   })
-  it('should generate a single-leaf tree correctly', function () {
-    const tree = new PlasmaMerkleSumTree([TX1])
+  it('should generate a single-leaf tree correctly', () => {
+    const tree = new PlasmaMerkleSumTree([tx1])
     const root = tree.root()
-    assert.strictEqual(root.data, '351a7a2ec4f370b6d2eea2199516c22f5582bf37b4a54173ca5abbca3d0a9c65' + 'ffffffffffffffffffffffffffffffff')
+    assert.strictEqual(root.data, '7afd24f24623ffd54e4127920b594a1fc9595ac529a51eaaf29aad3de4f9109e' + 'ffffffffffffffffffffffffffffffff')
   })
-  it('should generate an even tree correctly', function () {
-    const tree = new PlasmaMerkleSumTree([TX1, TX2])
+  it('should generate an even tree correctly', () => {
+    const tree = new PlasmaMerkleSumTree([tx1, tx2])
     const root = tree.root()
-    assert.strictEqual(root.data, 'beec6525a226cfc4e7494f14960aeaf4ce826f8998e675fbf58d07b89d0d2749' + 'ffffffffffffffffffffffffffffffff')
+    assert.strictEqual(root.data, 'be785497466502d2923277d9db63004be63defc7146d408ff94a204963a19eaa' + 'ffffffffffffffffffffffffffffffff')
   })
   it('should generate an odd tree w/ multiple types correctly', function () {
-    const tree = new PlasmaMerkleSumTree([TX1, TX2, TX3])
+    const tree = new PlasmaMerkleSumTree([tx1, tx2, tx3])
     const root = tree.root()
-    assert.strictEqual(root.data, '26fa704d04daeef66fa9b5c89486813ad0697002cc6b82b52b8377b9fb7c28d4' + 'ffffffffffffffffffffffffffffffff')
+    assert.strictEqual(root.data, 'b3498ac522c72d090ef8bcbe4b50df59676fd9588f46a0139029039598d00617' + 'ffffffffffffffffffffffffffffffff')
   })
-  it('should succeed in generating a tree of 100 ordered transactions', function () {
-    const TXs = DT.genNSequentialTransactions(100)
-    assert.doesNotThrow(function () {return new PlasmaMerkleSumTree(TXs)})
+  it('should verify a random proof', () => {
+    const txs = txutils.getSequentialTxs(100)
+    const tree = new PlasmaMerkleSumTree(txs)
+    const index = Math.floor(Math.random() * 100)
+    const proof = tree.getBranch(index)
+    const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], proof, tree.root())
+    assert.isTrue(isValid)
   })
 })

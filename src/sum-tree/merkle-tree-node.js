@@ -1,9 +1,13 @@
-BN = require('web3').utils.BN
+const BN = require('web3').utils.BN
 
 class MerkleTreeNode {
-  constructor (data, sum) {
+  constructor (hash, sum) {
     this.sum = new BN(sum)
-    this.data = data.slice(2) + this.sum.toString(16,2 * 16) // 2*bytes = num chars in hex 
+    if (hash.startsWith('0x')) {
+      hash = hash.slice(2)
+    }
+    this.hash = hash
+    this.data = hash + this.sum.toString(16, 32)
   }
 }
 

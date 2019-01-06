@@ -13,26 +13,26 @@ class MerkleSumTree {
     }
   }
 
+  static hash (value) {
+    return web3.utils.soliditySha3(value)
+  }
+
+  static parent (left, right) {
+    return new MerkleTreeNode(MerkleSumTree.hash('0x' + left.data + right.data), (left.sum.add(right.sum)))
+  }
+
+  static emptyLeaf () {
+    return new MerkleTreeNode('0x0000000000000000000000000000000000000000000000000000000000000000', 0)
+  }
+
   root () {
     return this.levels[this.levels.length - 1][0]
   }
 
-  hash (value) {
-    return web3.utils.soliditySha3(value)
-  }
-
   parseLeaves (leaves) {
     return leaves.map((leaf) => {
-      return new MerkleTreeNode(this.hash(leaf.data), leaf.sum)
+      return new MerkleTreeNode(MerkleSumTree.hash(leaf.data), leaf.sum)
     })
-  }
-
-  emptyLeaf () {
-    return new MerkleTreeNode('0x0000000000000000000000000000000000000000000000000000000000000000', 0)
-  }
-
-  parent (left, right) {
-    return new MerkleTreeNode(this.hash('0x' + left.data + right.data), (left.sum.add(right.sum)))
   }
 
   generate (children, levels) {
@@ -43,8 +43,8 @@ class MerkleSumTree {
     let parents = []
     for (let i = 0; i < children.length; i += 2) {
       let left = children[i]
-      let right = (i + 1 === children.length) ? this.emptyLeaf() : children[i + 1]
-      let parent = this.parent(left, right)
+      let right = (i + 1 === children.length) ? MerkleSumTree.emptyLeaf() : children[i + 1]
+      let parent = MerkleSumTree.parent(left, right)
       parents.push(parent)
     }
 

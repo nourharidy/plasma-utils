@@ -1,5 +1,6 @@
-/* global describe it */
 const assert = require('chai').assert
+const BN = require('web3').utils.BN
+
 const MerkleSumTree = require('../../src/sum-tree/sum-tree')
 
 describe('MerkleSumTree', function () {

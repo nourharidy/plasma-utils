@@ -1,5 +1,9 @@
 {
   "extends": "standard",
+  "globals": {
+    "describe": true,
+    "it": true
+  },
   "rules": {
     "new-cap": [
       2,

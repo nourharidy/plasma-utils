@@ -29,8 +29,18 @@ class SchemaByteArray extends BaseSchemaType {
     this._initValidators()
   }
 
+  get length () {
+    return this.options.length * 2
+  }
+
   preprocess (value) {
-    return new BN(value).toBuffer('be', this.options.length)
+    if (value instanceof String || typeof value === 'string') {
+      return Buffer.from(value, 'hex')
+    } else {
+      const bnValue = new BN(value)
+      const length = Math.max(bnValue.byteLength(), this.options.length)
+      return bnValue.toBuffer('be', length)
+    }
   }
 
   encode (value) {
@@ -38,7 +48,7 @@ class SchemaByteArray extends BaseSchemaType {
   }
 
   decode (value) {
-    return Buffer.from(value, 'hex')
+    return new BN(value, 16).toBuffer('be', this.options.length)
   }
 }
 
