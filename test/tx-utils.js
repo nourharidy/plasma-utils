@@ -1,5 +1,10 @@
 const Transaction = require('../src/serialization').models.Transaction
 
+/**
+ * Returns a list of `n` sequential transactions.
+ * @param {*} n Number of sequential transactions to return.
+ * @return {*} A list of sequential transactions.
+ */
 const getSequentialTxs = (n) => {
   let txs = []
 

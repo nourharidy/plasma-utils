@@ -67,7 +67,7 @@ describe('PlasmaMerkleSumTree', () => {
     const txs = txutils.getSequentialTxs(100)
     const tree = new PlasmaMerkleSumTree(txs)
     const index = Math.floor(Math.random() * 100)
-    const proof = tree.getProof(index)
+    const proof = tree.getInclusionProof(index)
     it('should verify a random proof', () => {
       const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], proof, tree.root())
       assert.isTrue(isValid)
@@ -77,7 +77,7 @@ describe('PlasmaMerkleSumTree', () => {
       assert.isFalse(isValid)
     })
     it('should not verify a proof with an invalid element', () => {
-      let invalidProof = tree.getProof(index)
+      let invalidProof = tree.getInclusionProof(index)
       invalidProof.pop() // Remove an element
       const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], invalidProof, tree.root())
       assert.isFalse(isValid)
