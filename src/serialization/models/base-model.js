@@ -1,3 +1,7 @@
+/**
+ * Base model that makes use of a particular schema.
+ * Can be extended by other classes with different schemas.
+ */
 class BaseModel {
   constructor (args, schema) {
     this.schema = schema

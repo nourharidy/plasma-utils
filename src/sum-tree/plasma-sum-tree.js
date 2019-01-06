@@ -3,6 +3,7 @@ const BN = require('web3').utils.BN
 const MerkleSumTree = require('./sum-tree')
 const MerkleTreeNode = require('./merkle-tree-node')
 const Transaction = require('../serialization').models.Transaction
+const constants = require('../constants')
 
 /**
  * Class that represents the special type of Merkle sum tree we use.
@@ -25,13 +26,11 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     })
 
     // Minimum and maximum coin IDs.
-    const MIN = new BN(0)
-    const MAX = new BN('ffffffffffffffffffffffffffffffff', 16)
 
     let parsed = []
 
     if (leaves.length === 1) {
-      parsed.push(new MerkleTreeNode(PlasmaMerkleSumTree.hash(leaves[0].encoded), MAX))
+      parsed.push(new MerkleTreeNode(PlasmaMerkleSumTree.hash(leaves[0].encoded), constants.MAX_COIN_ID))
       return parsed
     }
 
@@ -51,14 +50,14 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     // the start of its sibling transaction minus the minimum possible coin ID.
     // This is to allow for "implicit" non-inclusion proofs
     // for any ranges where `end` is less than `start` of the first transaction.
-    parsed.unshift(new MerkleTreeNode(PlasmaMerkleSumTree.hash(leaves[0].encoded), leaves[1].start.sub(MIN)))
+    parsed.unshift(new MerkleTreeNode(PlasmaMerkleSumTree.hash(leaves[0].encoded), leaves[1].start.sub(constants.MIN_COIN_ID)))
 
     // Custom rule for the last leaf, if there's more than one.
     // Sum of the last leaf is always defined as
     // the maximum possible coin ID minus the start of the last transaction.
     // This is again to allow for "implicit" non-inclusion proofs
     // for any ranges where `start` is greater than `end`.
-    parsed.push(new MerkleTreeNode(PlasmaMerkleSumTree.hash(leaves[leaves.length - 1].encoded), MAX.sub(leaves[leaves.length - 1].start)))
+    parsed.push(new MerkleTreeNode(PlasmaMerkleSumTree.hash(leaves[leaves.length - 1].encoded), constants.MAX_COIN_ID.sub(leaves[leaves.length - 1].start)))
 
     return parsed
   }

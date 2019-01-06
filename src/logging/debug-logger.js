@@ -1,6 +1,9 @@
 const BaseLogger = require('./base-logger')
 const debug = require('debug')
 
+/**
+ * Logger that wraps `debug`.
+ */
 class DebugLogger extends BaseLogger {
   constructor () {
     super()

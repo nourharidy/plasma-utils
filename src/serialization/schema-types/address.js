@@ -1,6 +1,9 @@
 const web3 = require('web3')
 const BaseSchemaType = require('./base-schema-type')
 
+/**
+ * Schema type for an address.
+ */
 class SchemaAddress extends BaseSchemaType {
   constructor (options) {
     super(options)

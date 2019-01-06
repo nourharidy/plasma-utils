@@ -1,10 +1,14 @@
 const BN = require('web3').utils.BN
 const BaseSchemaType = require('./base-schema-type')
 
+/**
+ * Schema type for an array of bytes.
+ */
 class SchemaByteArray extends BaseSchemaType {
   constructor (options) {
     super(options)
 
+    // Initialize available validators.
     this.validators = {
       length: (value) => {
         return {
@@ -34,6 +38,7 @@ class SchemaByteArray extends BaseSchemaType {
   }
 
   preprocess (value) {
+    // Internally store as a Buffer.
     if (value instanceof String || typeof value === 'string') {
       return Buffer.from(value, 'hex')
     } else {
@@ -48,6 +53,7 @@ class SchemaByteArray extends BaseSchemaType {
   }
 
   decode (value) {
+    // Externally expose a BigNum.
     return new BN(value, 16).toBuffer('be', this.options.length)
   }
 }
