@@ -1,8 +1,10 @@
-const assert = require('chai').assert
+const chai = require('chai')
 
 const PlasmaMerkleSumTree = require('../../src/sum-tree/plasma-sum-tree')
 const Transaction = require('../../src/serialization').models.Transaction
 const txutils = require('../tx-utils')
+
+const should = chai.should()
 
 const accounts = [
   '0x43aaDF3d5b44290385fe4193A1b13f15eF3A4FD5',
@@ -59,25 +61,25 @@ const tx3 = new Transaction({
 describe('PlasmaMerkleSumTree', () => {
   it('should return undefined for an empty tree', () => {
     const tree = new PlasmaMerkleSumTree()
-    assert.strictEqual(tree.root(), undefined, 'root is undefined')
+
+    should.not.exist(tree.root())
   })
 
   it('should generate a single-leaf tree correctly', () => {
     const tree = new PlasmaMerkleSumTree([tx1])
-    const root = tree.root()
-    assert.strictEqual(root.data, '563f225cdc192264a90e7e4b402815479c71a16f1593afa4fc6323e18583472a' + 'ffffffffffffffffffffffffffffffff')
+
+    tree.root().data.should.equal('563f225cdc192264a90e7e4b402815479c71a16f1593afa4fc6323e18583472a' + 'ffffffffffffffffffffffffffffffff')
   })
 
   it('should generate an even tree correctly', () => {
     const tree = new PlasmaMerkleSumTree([tx1, tx2])
-    const root = tree.root()
-    assert.strictEqual(root.data, 'd4751f5dd74785e58aebfe9fd3e46519ee05527e1ac11209fa8190f20561c6cb' + 'ffffffffffffffffffffffffffffffff')
+
+    tree.root().data.should.equal('d4751f5dd74785e58aebfe9fd3e46519ee05527e1ac11209fa8190f20561c6cb' + 'ffffffffffffffffffffffffffffffff')
   })
 
   it('should generate an odd tree w/ multiple types correctly', function () {
     const tree = new PlasmaMerkleSumTree([tx1, tx2, tx3])
-    const root = tree.root()
-    assert.strictEqual(root.data, 'e9dabef4e3b86cb540d587c04bee1f4e2d286cc8c61e5c77c0a1ca6da63810ad' + 'ffffffffffffffffffffffffffffffff')
+    tree.root().data.should.equal('e9dabef4e3b86cb540d587c04bee1f4e2d286cc8c61e5c77c0a1ca6da63810ad' + 'ffffffffffffffffffffffffffffffff')
   })
 
   describe('checkProof', () => {
@@ -88,19 +90,22 @@ describe('PlasmaMerkleSumTree', () => {
 
     it('should verify a random proof', () => {
       const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], proof, tree.root())
-      assert.isTrue(isValid)
+
+      isValid.should.be.true
     })
 
     it('should not verify a proof with an invalid index', () => {
       const isValid = PlasmaMerkleSumTree.checkInclusion(index + 1, txs[index], proof, tree.root())
-      assert.isFalse(isValid)
+
+      isValid.should.be.false
     })
 
     it('should not verify a proof with an invalid element', () => {
       let invalidProof = tree.getInclusionProof(index)
       invalidProof.pop() // Remove an element
       const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], invalidProof, tree.root())
-      assert.isFalse(isValid)
+
+      isValid.should.be.false
     })
   })
 })

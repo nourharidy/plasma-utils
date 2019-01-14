@@ -1,11 +1,13 @@
 /* eslint-disable no-new */
-const assert = require('chai').assert
+const chai = require('chai')
 const BigNum = require('bn.js')
 
 const models = require('../../src/serialization').models
 const Transfer = models.Transfer
 const Signature = models.Signature
 const Transaction = models.Transaction
+
+const should = chai.should()
 
 const encodedTransfer = '43aaDF3d5b44290385fe4193A1b13f15eF3A4FD5a12bcf1159aa01c739269391ae2d0be4037259f3000000010000000000000000000000020000000000000000000000030000000000000000000000000000000000000000000000000000000000000004'
 const decodedTransfer = {
@@ -38,63 +40,69 @@ describe('Serialization', () => {
   describe('Transfer', () => {
     it('should be correctly encoded', () => {
       const tr = new Transfer(decodedTransfer)
-      assert.strictEqual(encodedTransfer, tr.encoded, 'transfer was encoded correctly')
+
+      tr.encoded.should.equal(encodedTransfer)
     })
 
     it('should be correctly decoded', () => {
       const tr = new Transfer(encodedTransfer)
-      assert.deepEqual(decodedTransfer, tr.decoded, 'transfer was decoded correctly')
+
+      tr.decoded.should.deep.equal(decodedTransfer)
     })
 
     it('should throw if trying to create a Transfer with an invalid address', () => {
-      assert.throws(() => {
+      should.Throw(() => {
         new Transfer({
           ...decodedTransfer,
           ...{ sender: 'This is not a valid Ethereum address' }
         })
-      }, 'Address must be a valid Ethereum address', 'error was thrown')
+      }, 'Address must be a valid Ethereum address')
     })
 
     it('should throw if trying to create a Transfer with an invalid integer parameter', () => {
-      assert.throws(() => {
+      should.Throw(() => {
         new Transfer({
           ...decodedTransfer,
           ...{ token: 99999999999 }
         })
-      }, 'Number is too large', 'error was thrown')
+      }, 'Number is too large')
     })
   })
 
   describe('Signature', () => {
     it('should be correctly encoded', () => {
       const sig = new Signature(decodedSignature)
-      assert.strictEqual(encodedSignature, sig.encoded, 'signature was encoded correctly')
+
+      sig.encoded.should.equal(encodedSignature)
     })
 
     it('should be correctly decoded', () => {
       const sig = new Signature(encodedSignature)
-      assert.deepEqual(decodedSignature, sig.decoded, 'signature was decoded correctly')
+
+      sig.decoded.should.deep.equal(decodedSignature)
     })
 
     it('should throw if trying to create a Signature with an invalid parameter', () => {
-      assert.throws(() => {
+      should.Throw(() => {
         new Signature({
           ...decodedSignature,
           ...{ v: 'deadbeef' }
         })
-      }, 'Invalid Buffer length', 'error was thrown')
+      }, 'Invalid Buffer length')
     })
   })
 
   describe('Transaction', () => {
     it('should be correctly encoded', () => {
       const tx = new Transaction(decodedTransaction)
-      assert.strictEqual(encodedTransaction, tx.encoded, 'transaction was encoded correctly')
+
+      tx.encoded.should.equal(encodedTransaction)
     })
 
     it('should be correctly decoded', () => {
       const tx = new Transaction(encodedTransaction)
-      assert.deepEqual(decodedTransaction, tx.decoded, 'transaction was decoded correctly')
+
+      tx.decoded.should.deep.equal(decodedTransaction)
     })
   })
 })
