@@ -32,7 +32,9 @@ class SchemaAddress extends BaseSchemaType {
   }
 
   decode (value) {
-    return '0x' + value
+    const decoded = '0x' + value
+    this.validate(decoded)
+    return decoded
   }
 }
 

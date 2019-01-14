@@ -1,9 +1,12 @@
+const BigNum = require('bn.js')
+
 /**
  * Class used to define schemas.
  */
 class Schema {
   constructor (fields) {
     this.fields = this._parseFields(fields)
+    this.isArray = false
   }
 
   /**
@@ -25,7 +28,11 @@ class Schema {
   validate (object) {
     for (let key in this.fields) {
       let field = this.fields[key]
-      field.validate(object[key])
+      if (field.isArray) {
+        object[key].forEach(field.validate.bind(field))
+      } else {
+        field.validate(object[key])
+      }
     }
   }
 
@@ -34,10 +41,14 @@ class Schema {
    * @param {*} object Object to fit.
    * @return {*} The modified object.
    */
-  preprocess (object) {
+  cast (object) {
     for (let key in this.fields) {
       let field = this.fields[key]
-      object[key] = field.preprocess(object[key])
+      if (field.isArray) {
+        object[key] = object[key].map(field.cast.bind(field))
+      } else {
+        object[key] = field.cast(object[key])
+      }
     }
     return object
   }
@@ -51,7 +62,14 @@ class Schema {
     let encoded = ''
     for (let key in this.fields) {
       let field = this.fields[key]
-      encoded += field.encode(object[key])
+      if (field.isArray) {
+        encoded += new BigNum(object[key].length).toString('hex', 2)
+        for (let i = 0; i < object[key].length; i++) {
+          encoded += field.encode(object[key][i])
+        }
+      } else {
+        encoded += field.encode(object[key])
+      }
     }
     return encoded
   }
@@ -64,12 +82,27 @@ class Schema {
   decode (str) {
     let decoded = {}
     let currentIndex = 0
+
+    const slice = (string, length) => {
+      const ret = string.slice(currentIndex, currentIndex + length)
+      currentIndex += length
+      return ret
+    }
+
     for (let key in this.fields) {
       let field = this.fields[key]
-      let slice = str.slice(currentIndex, currentIndex + field.length)
-      currentIndex += field.length
-      decoded[key] = field.decode(slice)
+      if (field.isArray) {
+        decoded[key] = []
+
+        let arrLen = new BigNum(slice(str, 2), 'hex').toNumber()
+        for (let i = 0; i < arrLen; i++) {
+          decoded[key].push(field.decode(slice(str, field.length)))
+        }
+      } else {
+        decoded[key] = field.decode(slice(str, field.length))
+      }
     }
+
     return decoded
   }
 
@@ -80,12 +113,10 @@ class Schema {
     let parsedFields = {}
     for (let key in fields) {
       let field = fields[key]
-      if (field.type instanceof Schema) {
-        // Using a Schema as a SchemaType is OK.
-        parsedFields[key] = field.type
-      } else {
-        parsedFields[key] = new field.type(field)
-      }
+      const isArray = Array.isArray(field.type)
+      const type = isArray ? field.type[0] : field.type
+      parsedFields[key] = (type instanceof Schema) ? type : new type(field)
+      parsedFields[key].isArray = isArray
     }
     return parsedFields
   }

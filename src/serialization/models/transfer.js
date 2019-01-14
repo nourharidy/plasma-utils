@@ -4,10 +4,10 @@ const schemas = require('../schemas')
 /**
  * Represents a transfer record.
  */
-class TransferRecord extends BaseModel {
+class Transfer extends BaseModel {
   constructor (args) {
-    super(args, schemas.TransferRecordSchema)
+    super(args, schemas.TransferSchema)
   }
 }
 
-module.exports = TransferRecord
+module.exports = Transfer

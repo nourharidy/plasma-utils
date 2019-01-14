@@ -1,8 +1,8 @@
 const Schema = require('../schema')
 const Address = require('../schema-types/address')
-const ByteArray = require('../schema-types/byte-array')
+const Number = require('../schema-types/number')
 
-const TransferRecordSchema = new Schema({
+const TransferSchema = new Schema({
   sender: {
     type: Address,
     required: true
@@ -12,25 +12,25 @@ const TransferRecordSchema = new Schema({
     required: true
   },
   token: {
-    type: ByteArray,
+    type: Number,
     length: 4,
     required: true
   },
   start: {
-    type: ByteArray,
+    type: Number,
     length: 12,
     required: true
   },
   end: {
-    type: ByteArray,
+    type: Number,
     length: 12,
     required: true
   },
   block: {
-    type: ByteArray,
+    type: Number,
     length: 32,
     required: true
   }
 })
 
-module.exports = TransferRecordSchema
+module.exports = TransferSchema

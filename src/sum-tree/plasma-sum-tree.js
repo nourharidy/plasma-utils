@@ -17,18 +17,20 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    */
   parseLeaves (leaves) {
     // Pull out the start, end, and encoding of each transaction.
-    leaves = leaves.map((leaf) => {
-      return {
-        start: new BN(leaf.decoded.transfer.start),
-        end: new BN(leaf.decoded.transfer.end),
-        encoded: '0x' + leaf.encoded
-      }
+    leaves = leaves.reduce((prev, curr) => {
+      let parsedTransfers = curr.transfers.map((transfer) => {
+        return {
+          start: new BN(transfer.decoded.start),
+          end: new BN(transfer.decoded.end),
+          encoded: '0x' + curr.encoded
+        }
+      })
+      return prev.concat(parsedTransfers)
+    }, []).sort((a, b) => {
+      return a.start - b.start
     })
 
-    // Minimum and maximum coin IDs.
-
     let parsed = []
-
     if (leaves.length === 1) {
       parsed.push(new MerkleTreeNode(PlasmaMerkleSumTree.hash(leaves[0].encoded), constants.MAX_COIN_ID))
       return parsed
@@ -121,6 +123,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     // Reverse the order of the bitstring to start at the bottom of the tree
     path = path.split('').reverse().join('')
 
+    // TODO: Add support for multiple transfers.
     let pathIndex = 0
     let proofElement
     let computedNode = new MerkleTreeNode(PlasmaMerkleSumTree.hash('0x' + transaction.encoded), proof[0].sum)

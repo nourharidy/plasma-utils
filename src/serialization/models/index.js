@@ -1,9 +1,9 @@
 const Signature = require('./signature')
-const TransferRecord = require('./transfer-record')
+const Transfer = require('./transfer')
 const Transaction = require('./transaction')
 
 module.exports = {
   Signature,
-  TransferRecord,
+  Transfer,
   Transaction
 }

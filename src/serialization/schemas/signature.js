@@ -1,19 +1,19 @@
 const Schema = require('../schema')
-const ByteArray = require('../schema-types/byte-array')
+const Bytes = require('../schema-types/bytes')
 
 const SignatureSchema = new Schema({
   v: {
-    type: ByteArray,
+    type: Bytes,
     length: 1,
     required: true
   },
   r: {
-    type: ByteArray,
+    type: Bytes,
     length: 32,
     required: true
   },
   s: {
-    type: ByteArray,
+    type: Bytes,
     length: 32,
     required: true
   }

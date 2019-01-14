@@ -77,7 +77,7 @@ class BaseSchemaType {
    * @param {*} value Value to process.
    * @return {*} The processed value.
    */
-  preprocess (value) {
+  cast (value) {
     return value
   }
 

@@ -1,10 +1,9 @@
-const BN = require('web3').utils.BN
 const BaseSchemaType = require('./base-schema-type')
 
 /**
- * Schema type for an array of bytes.
+ * Schema type for a buffer.
  */
-class SchemaByteArray extends BaseSchemaType {
+class SchemaBuffer extends BaseSchemaType {
   constructor (options) {
     super(options)
 
@@ -15,7 +14,7 @@ class SchemaByteArray extends BaseSchemaType {
           validate: (v) => {
             return (v.length === value)
           },
-          message: 'Invalid ByteArray length',
+          message: 'Invalid Buffer length',
           type: 'length'
         }
       },
@@ -24,7 +23,7 @@ class SchemaByteArray extends BaseSchemaType {
           validate: (v) => {
             return (v instanceof Buffer)
           },
-          message: 'ByteArray must be a Buffer',
+          message: 'Value must be a Buffer',
           type: 'required'
         }
       }
@@ -37,15 +36,8 @@ class SchemaByteArray extends BaseSchemaType {
     return this.options.length * 2
   }
 
-  preprocess (value) {
-    // Internally store as a Buffer.
-    if (value instanceof String || typeof value === 'string') {
-      return Buffer.from(value, 'hex')
-    } else {
-      const bnValue = new BN(value)
-      const length = Math.max(bnValue.byteLength(), this.options.length)
-      return bnValue.toBuffer('be', length)
-    }
+  cast (value) {
+    return Buffer.from(value, 'hex')
   }
 
   encode (value) {
@@ -53,9 +45,10 @@ class SchemaByteArray extends BaseSchemaType {
   }
 
   decode (value) {
-    // Externally expose a BigNum.
-    return new BN(value, 16).toBuffer('be', this.options.length)
+    const decoded = Buffer.from(value, 'hex')
+    this.validate(decoded)
+    return decoded
   }
 }
 
-module.exports = SchemaByteArray
+module.exports = SchemaBuffer

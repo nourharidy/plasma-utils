@@ -10,7 +10,7 @@ class BaseModel {
       args = this.schema.decode(args)
     }
 
-    this.args = this.schema.preprocess(args)
+    this.args = this.schema.cast(args)
     this.schema.validate(args)
   }
 

@@ -1,13 +1,13 @@
 const Schema = require('../schema')
-const TransferRecordSchema = require('./transfer-record')
+const TransferSchema = require('./transfer')
 const SignatureSchema = require('./signature')
 
 const TransactionSchema = new Schema({
-  transfer: {
-    type: TransferRecordSchema
+  transfers: {
+    type: [TransferSchema]
   },
-  signature: {
-    type: SignatureSchema
+  signatures: {
+    type: [SignatureSchema]
   }
 })
 

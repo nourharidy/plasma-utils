@@ -10,19 +10,23 @@ const getSequentialTxs = (n) => {
 
   for (let i = 0; i < n; i++) {
     txs[i] = new Transaction({
-      transfer: {
-        sender: '0x0000000000000000000000000000000000000000',
-        recipient: '0x0000000000000000000000000000000000000000',
-        token: 0,
-        start: i * 10,
-        end: (i + 1) * 10,
-        block: 0
-      },
-      signature: {
-        v: 0,
-        r: 0,
-        s: 0
-      }
+      transfers: [
+        {
+          sender: '0x0000000000000000000000000000000000000000',
+          recipient: '0x0000000000000000000000000000000000000000',
+          token: 0,
+          start: i * 10,
+          end: (i + 1) * 10,
+          block: 0
+        }
+      ],
+      signatures: [
+        {
+          v: '1b',
+          r: 'd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c042',
+          s: '24e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
+        }
+      ]
     })
   }
 
