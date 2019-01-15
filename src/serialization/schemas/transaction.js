@@ -1,7 +1,6 @@
 const Schema = require('../schema')
 const Number = require('../schema-types/number')
 const TransferSchema = require('./transfer')
-const SignatureSchema = require('./signature')
 
 const TransactionSchema = new Schema({
   block: {
@@ -11,9 +10,6 @@ const TransactionSchema = new Schema({
   },
   transfers: {
     type: [TransferSchema]
-  },
-  signatures: {
-    type: [SignatureSchema]
   }
 })
 

@@ -12,50 +12,41 @@ const accounts = [
   '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8'
 ]
 
-const signature = {
-  v: '1b',
-  r: 'd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c042',
-  s: '24e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
-}
-
 const tx1 = new Transaction({
+  block: 0,
   transfers: [
     {
       sender: accounts[0],
       recipient: accounts[1],
       token: 0,
       start: 2,
-      end: 3,
-      block: 5
+      end: 3
     }
-  ],
-  signatures: [signature]
+  ]
 })
 const tx2 = new Transaction({
+  block: 0,
   transfers: [
     {
       sender: accounts[2],
       recipient: accounts[1],
       token: 0,
       start: 6,
-      end: 7,
-      block: 5
+      end: 7
     }
-  ],
-  signatures: [signature]
+  ]
 })
 const tx3 = new Transaction({
+  block: 0,
   transfers: [
     {
       sender: accounts[2],
       recipient: accounts[1],
       token: 1,
       start: 100,
-      end: 108,
-      block: 5
+      end: 108
     }
-  ],
-  signatures: [signature]
+  ]
 })
 
 describe('PlasmaMerkleSumTree', () => {
@@ -69,18 +60,18 @@ describe('PlasmaMerkleSumTree', () => {
     it('should generate a single-leaf tree correctly', () => {
       const tree = new PlasmaMerkleSumTree([tx1])
 
-      tree.root().data.should.equal('c3c96abb40140f7457433ba3f83608abb9b847e5a6f9f8b9c10fdc41d134797e' + 'ffffffffffffffffffffffffffffffff')
+      tree.root().data.should.equal('fc06a463e3d920cce96b4e5385fc4c7063d515a861ccb79ce0c49699a7685ee4' + 'ffffffffffffffffffffffffffffffff')
     })
 
     it('should generate an even tree correctly', () => {
       const tree = new PlasmaMerkleSumTree([tx1, tx2])
 
-      tree.root().data.should.equal('e43804b84ca3d8834ada90e3c5cc3642d38ba352118a9187ffc5362e0b6f87e6' + 'ffffffffffffffffffffffffffffffff')
+      tree.root().data.should.equal('f415c586263ae5bff92d841121f0de1fea5e0b51d44d0bfb60b8e596f50292b7' + 'ffffffffffffffffffffffffffffffff')
     })
 
     it('should generate an odd tree w/ multiple types correctly', () => {
       const tree = new PlasmaMerkleSumTree([tx1, tx2, tx3])
-      tree.root().data.should.equal('b69f34c27df31d472df742a2a100ead9e059c49aab7d5f1e9442f0c32dedba95' + 'ffffffffffffffffffffffffffffffff')
+      tree.root().data.should.equal('257dbda67d08ac131f9304e3122ba0d821676acec8c0e3f3ea3b77c641d817e8' + 'ffffffffffffffffffffffffffffffff')
     })
   })
 

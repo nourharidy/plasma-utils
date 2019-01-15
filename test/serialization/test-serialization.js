@@ -26,31 +26,25 @@ const decodedSignature = {
   s: '24e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
 }
 
-const encodedTransaction = '0000000000000000000000000000000000000000000000000000000000000001' + '01' + encodedTransfer + '01' + encodedSignature
+const encodedTransaction = '0000000000000000000000000000000000000000000000000000000000000001' + '01' + encodedTransfer
 const decodedTransaction = {
   block: new BigNum('1', 'hex'),
   transfers: [
     decodedTransfer
-  ],
-  signatures: [
-    decodedSignature
   ]
 }
 
-const encodedProof = '01' + '00000000000000000000000000000003' + '01' + '01' + '563f225cdc192264a90e7e4b402815479c71a16f1593afa4fc6323e18583472affffffffffffffffffffffffffffffff' + '01' + encodedSignature
+const encodedProof = '01' + '00000000000000000000000000000003' + '00000000000000000000000000000004' + '01' + '563f225cdc192264a90e7e4b402815479c71a16f1593afa4fc6323e18583472affffffffffffffffffffffffffffffff' + encodedSignature
 const decodedProof = {
-  parsedSums: [
-    new BigNum('3', 'hex')
-  ],
-  inclusionProofs: [
+  transferProofs: [
     {
-      branches: [
+      parsedSum: new BigNum('3', 'hex'),
+      leafIndex: new BigNum('4', 'hex'),
+      inclusionProof: [
         '563f225cdc192264a90e7e4b402815479c71a16f1593afa4fc6323e18583472affffffffffffffffffffffffffffffff'
-      ]
+      ],
+      signature: decodedSignature
     }
-  ],
-  signatures: [
-    decodedSignature
   ]
 }
 

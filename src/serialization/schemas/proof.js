@@ -3,24 +3,28 @@ const Number = require('../schema-types/number')
 const Bytes = require('../schema-types/bytes')
 const Signature = require('./signature')
 
-const InclusionProof = new Schema({
-  branches: {
-    type: [Bytes],
-    length: 48
-  }
-})
-
-const ProofSchema = new Schema({
-  parsedSums: {
-    type: [Number],
+const TransferProofSchema = new Schema({
+  parsedSum: {
+    type: Number,
     length: 16
   },
-  inclusionProofs: {
-    type: [InclusionProof]
+  leafIndex: {
+    type: Number,
+    length: 16
   },
-  signatures: {
-    type: [Signature]
+  inclusionProof: {
+    type: [Bytes],
+    length: 48
+  },
+  signature: {
+    type: Signature
   }
 })
 
-module.exports = ProofSchema
+const TransactionProofSchema = new Schema({
+  transferProofs: {
+    type: [TransferProofSchema]
+  }
+})
+
+module.exports = TransactionProofSchema
