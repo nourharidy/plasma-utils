@@ -59,27 +59,29 @@ const tx3 = new Transaction({
 })
 
 describe('PlasmaMerkleSumTree', () => {
-  it('should return undefined for an empty tree', () => {
-    const tree = new PlasmaMerkleSumTree()
+  describe('construction', () => {
+    it('should return undefined for an empty tree', () => {
+      const tree = new PlasmaMerkleSumTree()
 
-    should.not.exist(tree.root())
-  })
+      should.not.exist(tree.root())
+    })
 
-  it('should generate a single-leaf tree correctly', () => {
-    const tree = new PlasmaMerkleSumTree([tx1])
+    it('should generate a single-leaf tree correctly', () => {
+      const tree = new PlasmaMerkleSumTree([tx1])
 
-    tree.root().data.should.equal('563f225cdc192264a90e7e4b402815479c71a16f1593afa4fc6323e18583472a' + 'ffffffffffffffffffffffffffffffff')
-  })
+      tree.root().data.should.equal('c3c96abb40140f7457433ba3f83608abb9b847e5a6f9f8b9c10fdc41d134797e' + 'ffffffffffffffffffffffffffffffff')
+    })
 
-  it('should generate an even tree correctly', () => {
-    const tree = new PlasmaMerkleSumTree([tx1, tx2])
+    it('should generate an even tree correctly', () => {
+      const tree = new PlasmaMerkleSumTree([tx1, tx2])
 
-    tree.root().data.should.equal('d4751f5dd74785e58aebfe9fd3e46519ee05527e1ac11209fa8190f20561c6cb' + 'ffffffffffffffffffffffffffffffff')
-  })
+      tree.root().data.should.equal('e43804b84ca3d8834ada90e3c5cc3642d38ba352118a9187ffc5362e0b6f87e6' + 'ffffffffffffffffffffffffffffffff')
+    })
 
-  it('should generate an odd tree w/ multiple types correctly', function () {
-    const tree = new PlasmaMerkleSumTree([tx1, tx2, tx3])
-    tree.root().data.should.equal('e9dabef4e3b86cb540d587c04bee1f4e2d286cc8c61e5c77c0a1ca6da63810ad' + 'ffffffffffffffffffffffffffffffff')
+    it('should generate an odd tree w/ multiple types correctly', () => {
+      const tree = new PlasmaMerkleSumTree([tx1, tx2, tx3])
+      tree.root().data.should.equal('b69f34c27df31d472df742a2a100ead9e059c49aab7d5f1e9442f0c32dedba95' + 'ffffffffffffffffffffffffffffffff')
+    })
   })
 
   describe('checkProof', () => {

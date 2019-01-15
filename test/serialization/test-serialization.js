@@ -10,14 +10,13 @@ const Proof = models.Proof
 
 const should = chai.should()
 
-const encodedTransfer = '43aaDF3d5b44290385fe4193A1b13f15eF3A4FD5a12bcf1159aa01c739269391ae2d0be4037259f3000000010000000000000000000000020000000000000000000000030000000000000000000000000000000000000000000000000000000000000004'
+const encodedTransfer = '43aaDF3d5b44290385fe4193A1b13f15eF3A4FD5a12bcf1159aa01c739269391ae2d0be4037259f300000001000000000000000000000002000000000000000000000003'
 const decodedTransfer = {
   sender: '0x43aaDF3d5b44290385fe4193A1b13f15eF3A4FD5',
   recipient: '0xa12bcf1159aa01c739269391ae2d0be4037259f3',
   token: new BigNum('1', 'hex'),
   start: new BigNum('2', 'hex'),
-  end: new BigNum('3', 'hex'),
-  block: new BigNum('4', 'hex')
+  end: new BigNum('3', 'hex')
 }
 
 const encodedSignature = '1bd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c04224e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
@@ -27,8 +26,9 @@ const decodedSignature = {
   s: '24e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
 }
 
-const encodedTransaction = '01' + encodedTransfer + '01' + encodedSignature
+const encodedTransaction = '0000000000000000000000000000000000000000000000000000000000000001' + '01' + encodedTransfer + '01' + encodedSignature
 const decodedTransaction = {
+  block: new BigNum('1', 'hex'),
   transfers: [
     decodedTransfer
   ],

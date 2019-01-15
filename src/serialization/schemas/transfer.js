@@ -25,11 +25,6 @@ const TransferSchema = new Schema({
     type: Number,
     length: 12,
     required: true
-  },
-  block: {
-    type: Number,
-    length: 32,
-    required: true
   }
 })
 
