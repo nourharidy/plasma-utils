@@ -127,6 +127,8 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     // Reverse the order of the bitstring to start at the bottom of the tree
     path = path.split('').reverse().join('')
 
+    let leftSum = new BigNum(0)
+    let rightSum = new BigNum(0)
     let pathIndex = 0
     let proofElement
     let computedNode = new MerkleTreeNode(PlasmaMerkleSumTree.hash('0x' + transaction.encoded), proof[0].sum)
@@ -134,13 +136,18 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       proofElement = new MerkleTreeNode(proof[i].hash, proof[i].sum)
       if (path[pathIndex] === '0') {
         computedNode = PlasmaMerkleSumTree.parent(computedNode, proofElement)
+        rightSum.add(proof[i].sum)
       } else {
         computedNode = PlasmaMerkleSumTree.parent(proofElement, computedNode)
+        leftSum.add(proof[i].sum)
       }
       pathIndex++
     }
 
-    return computedNode.equals(root)
+    const transfer = transaction.transfers[transferIndex].decoded
+    const validSum = transfer.start.gte(leftSum) && transfer.end.lte(computedNode.sum.sub(rightSum))
+    const validRoot = computedNode.data === root
+    return validSum && validRoot
   }
 }
 

@@ -82,13 +82,13 @@ describe('PlasmaMerkleSumTree', () => {
     const proof = tree.getInclusionProof(index)
 
     it('should verify a random proof', () => {
-      const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], 0, proof, tree.root())
+      const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], 0, proof, tree.root().data)
 
       isValid.should.be.true
     })
 
     it('should not verify a proof with an invalid index', () => {
-      const isValid = PlasmaMerkleSumTree.checkInclusion(index + 1, txs[index], 0, proof, tree.root())
+      const isValid = PlasmaMerkleSumTree.checkInclusion(index + 1, txs[index], 0, proof, tree.root().data)
 
       isValid.should.be.false
     })
@@ -96,7 +96,7 @@ describe('PlasmaMerkleSumTree', () => {
     it('should not verify a proof with an invalid element', () => {
       let invalidProof = tree.getInclusionProof(index)
       invalidProof.pop() // Remove an element
-      const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], 0, invalidProof, tree.root())
+      const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], 0, invalidProof, tree.root().data)
 
       isValid.should.be.false
     })
