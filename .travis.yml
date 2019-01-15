@@ -4,12 +4,13 @@ node_js:
   - "10"
   - "node"
 
+cache:
+  - npm
+
 install:
   - npm install
+
 script:
   - npm run build
   - npm run lint
-  - npm test
-
-cache:
-  npm: true
+  - npm run test.coverage

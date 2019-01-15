@@ -1,4 +1,6 @@
 # plasma-utils
+[![Coverage Status](https://coveralls.io/repos/github/plasma-group/plasma-utils/badge.svg?branch=master)](https://coveralls.io/github/plasma-group/plasma-utils?branch=master) [![Build Status](https://travis-ci.org/plasma-group/plasma-utils.svg?branch=master)](https://travis-ci.org/plasma-group/plasma-utils)
+
 `plasma-utils` is the set of core utilities for the Plasma Group series of projects. These utilities can be imported into other projects when necessary or convenient.
 
 ## Installation

@@ -7,8 +7,10 @@
   "rules": {
     "new-cap": [
       2,
-      { "newIsCapExceptions": ["type"] },
-      { "capIsNewExceptions": ["Throw"] }
+      {
+        "newIsCapExceptions": ["type"],
+        "capIsNewExceptions": ["Throw"]
+      }
     ],
     "no-unused-expressions": 0,
     "chai-friendly/no-unused-expressions": 2
