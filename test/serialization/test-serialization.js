@@ -6,6 +6,7 @@ const models = require('../../src/serialization').models
 const Transfer = models.Transfer
 const Signature = models.Signature
 const Transaction = models.Transaction
+const Proof = models.Proof
 
 const should = chai.should()
 
@@ -30,6 +31,23 @@ const encodedTransaction = '01' + encodedTransfer + '01' + encodedSignature
 const decodedTransaction = {
   transfers: [
     decodedTransfer
+  ],
+  signatures: [
+    decodedSignature
+  ]
+}
+
+const encodedProof = '01' + '00000000000000000000000000000003' + '01' + '01' + '563f225cdc192264a90e7e4b402815479c71a16f1593afa4fc6323e18583472affffffffffffffffffffffffffffffff' + '01' + encodedSignature
+const decodedProof = {
+  parsedSums: [
+    new BigNum('3', 'hex')
+  ],
+  inclusionProofs: [
+    {
+      branches: [
+        '563f225cdc192264a90e7e4b402815479c71a16f1593afa4fc6323e18583472affffffffffffffffffffffffffffffff'
+      ]
+    }
   ],
   signatures: [
     decodedSignature
@@ -103,6 +121,20 @@ describe('Serialization', () => {
       const tx = new Transaction(encodedTransaction)
 
       tx.decoded.should.deep.equal(decodedTransaction)
+    })
+  })
+
+  describe('Proof', () => {
+    it('should be correctly encoded', () => {
+      const proof = new Proof(decodedProof)
+
+      proof.encoded.should.equal(encodedProof)
+    })
+
+    it('should be correctly decoded', () => {
+      const proof = new Proof(encodedProof)
+
+      proof.decoded.should.deep.equal(decodedProof)
     })
   })
 })

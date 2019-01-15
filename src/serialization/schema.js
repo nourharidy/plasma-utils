@@ -16,7 +16,8 @@ class Schema {
   get length () {
     let length = 0
     for (let key in this.fields) {
-      length += this.fields[key].length
+      let field = this.fields[key]
+      length += field.length + Number(field.isArray) * 2
     }
     return length
   }

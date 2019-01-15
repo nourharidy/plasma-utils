@@ -1,3 +1,5 @@
+const Web3 = require('web3')
+
 /**
  * Base model that makes use of a particular schema.
  * Can be extended by other classes with different schemas.
@@ -20,6 +22,10 @@ class BaseModel {
 
   get decoded () {
     return this.args
+  }
+
+  get hash () {
+    return Web3.utils.sha3('0x' + this.encoded)
   }
 }
 
