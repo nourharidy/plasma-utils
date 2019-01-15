@@ -1,4 +1,4 @@
-const BN = require('web3').utils.BN
+const BigNum = require('bn.js')
 
 const MerkleSumTree = require('./sum-tree')
 const MerkleTreeNode = require('./merkle-tree-node')
@@ -20,8 +20,8 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     leaves = leaves.reduce((prev, curr) => {
       let parsedTransfers = curr.transfers.map((transfer) => {
         return {
-          start: new BN(transfer.decoded.start),
-          end: new BN(transfer.decoded.end),
+          start: new BigNum(transfer.decoded.start),
+          end: new BigNum(transfer.decoded.end),
           encoded: '0x' + curr.encoded
         }
       })
@@ -77,10 +77,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     let branch = []
 
     // User needs to be given this extra information.
-    branch.push({
-      hash: '',
-      sum: this.levels[0][index].sum
-    })
+    branch.push(new MerkleTreeNode('0x0000000000000000000000000000000000000000000000000000000000000000', this.levels[0][index].sum).data)
 
     let parentIndex
     let node
@@ -88,13 +85,10 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     for (let i = 0; i < this.levels.length - 1; i++) {
       node = this.levels[i][siblingIndex]
       if (node === undefined) {
-        node = PlasmaMerkleSumTree.emptyLeaf()
+        node = PlasmaMerkleSumTree.emptyLeaf().data
       }
 
-      branch.push({
-        hash: node.hash,
-        sum: node.sum
-      })
+      branch.push(node.data)
 
       // Figure out the parent and then figure out the parent's sibling.
       parentIndex = siblingIndex === 0 ? 0 : Math.floor(siblingIndex / 2)
@@ -106,24 +100,33 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
 
   /**
    * Checks whether a given transaction was included in a specific tree.
-   * @param {Number} index Index of the transaction to check.
+   * @param {Number} leafIndex Position of the transfer in the Merkle tree.
    * @param {Transaction} transaction A Transaction object.
+   * @param {Number} transferIndex Which transfer to check.
    * @param {*} proof An inclusion proof.
    * @param {*} root The root node of the tree to check.
    * @return {boolean} `true` if the transaction is in the tree, `false` otherwise.
    */
-  static checkInclusion (index, transaction, proof, root) {
+  static checkInclusion (leafIndex, transaction, transferIndex, inclusionProof, root) {
     if (transaction instanceof String || typeof transaction === 'string') {
       transaction = new Transaction(transaction)
     }
 
+    // Convert each element into a nicer object to work with.
+    // Each proof element is a 48 byte (96 character) string.
+    const proof = inclusionProof.map((element) => {
+      return {
+        hash: element.slice(0, 64),
+        sum: new BigNum(element.slice(-32), 'hex')
+      }
+    })
+
     // Covert the index into a bitstring
-    let path = new BN(index).toString(2, proof.length)
+    let path = new BigNum(leafIndex).toString(2, proof.length)
 
     // Reverse the order of the bitstring to start at the bottom of the tree
     path = path.split('').reverse().join('')
 
-    // TODO: Add support for multiple transfers.
     let pathIndex = 0
     let proofElement
     let computedNode = new MerkleTreeNode(PlasmaMerkleSumTree.hash('0x' + transaction.encoded), proof[0].sum)
