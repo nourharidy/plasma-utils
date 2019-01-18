@@ -14,6 +14,8 @@ class BaseModel {
 
     this.args = this.schema.cast(args)
     this.schema.validate(args)
+
+    Object.assign(this, this.args)
   }
 
   get encoded () {
