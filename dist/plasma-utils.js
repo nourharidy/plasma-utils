@@ -11,7 +11,7 @@ module.exports = {
   serialization
 }
 
-},{"./src/logging":293,"./src/serialization":294,"./src/sum-tree/plasma-sum-tree.js":309,"./src/utils":311}],2:[function(require,module,exports){
+},{"./src/logging":293,"./src/serialization":294,"./src/sum-tree/plasma-sum-tree.js":312,"./src/utils":314}],2:[function(require,module,exports){
 module.exports = require('./register')().Promise
 
 },{"./register":4}],3:[function(require,module,exports){
@@ -50719,7 +50719,9 @@ module.exports = {
   decode
 }
 
-},{"./models":296,"./schemas":304}],295:[function(require,module,exports){
+},{"./models":296,"./schemas":306}],295:[function(require,module,exports){
+const Web3 = require('web3')
+
 /**
  * Base model that makes use of a particular schema.
  * Can be extended by other classes with different schemas.
@@ -50732,7 +50734,7 @@ class BaseModel {
       args = this.schema.decode(args)
     }
 
-    this.args = this.schema.preprocess(args)
+    this.args = this.schema.cast(args)
     this.schema.validate(args)
   }
 
@@ -50743,22 +50745,43 @@ class BaseModel {
   get decoded () {
     return this.args
   }
+
+  get hash () {
+    return Web3.utils.sha3('0x' + this.encoded)
+  }
 }
 
 module.exports = BaseModel
 
-},{}],296:[function(require,module,exports){
+},{"web3":272}],296:[function(require,module,exports){
 const Signature = require('./signature')
-const TransferRecord = require('./transfer-record')
+const Transfer = require('./transfer')
 const Transaction = require('./transaction')
+const Proof = require('./proof')
 
 module.exports = {
   Signature,
-  TransferRecord,
-  Transaction
+  Transfer,
+  Transaction,
+  Proof
 }
 
-},{"./signature":297,"./transaction":298,"./transfer-record":299}],297:[function(require,module,exports){
+},{"./proof":297,"./signature":298,"./transaction":299,"./transfer":300}],297:[function(require,module,exports){
+const BaseModel = require('./base-model')
+const schemas = require('../schemas')
+
+/**
+ * Represents a transaction.
+ */
+class Proof extends BaseModel {
+  constructor (args) {
+    super(args, schemas.ProofSchema)
+  }
+}
+
+module.exports = Proof
+
+},{"../schemas":306,"./base-model":295}],298:[function(require,module,exports){
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
 
@@ -50773,9 +50796,10 @@ class Signature extends BaseModel {
 
 module.exports = Signature
 
-},{"../schemas":304,"./base-model":295}],298:[function(require,module,exports){
+},{"../schemas":306,"./base-model":295}],299:[function(require,module,exports){
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
+const Transfer = require('./transfer')
 
 /**
  * Represents a transaction.
@@ -50783,27 +50807,30 @@ const schemas = require('../schemas')
 class Transaction extends BaseModel {
   constructor (args) {
     super(args, schemas.TransactionSchema)
+    this.transfers = this.args.transfers.map((transfer) => {
+      return new Transfer(transfer)
+    })
   }
 }
 
 module.exports = Transaction
 
-},{"../schemas":304,"./base-model":295}],299:[function(require,module,exports){
+},{"../schemas":306,"./base-model":295,"./transfer":300}],300:[function(require,module,exports){
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
 
 /**
  * Represents a transfer record.
  */
-class TransferRecord extends BaseModel {
+class Transfer extends BaseModel {
   constructor (args) {
-    super(args, schemas.TransferRecordSchema)
+    super(args, schemas.TransferSchema)
   }
 }
 
-module.exports = TransferRecord
+module.exports = Transfer
 
-},{"../schemas":304,"./base-model":295}],300:[function(require,module,exports){
+},{"../schemas":306,"./base-model":295}],301:[function(require,module,exports){
 const web3 = require('web3')
 const BaseSchemaType = require('./base-schema-type')
 
@@ -50838,13 +50865,15 @@ class SchemaAddress extends BaseSchemaType {
   }
 
   decode (value) {
-    return '0x' + value
+    const decoded = '0x' + value
+    this.validate(decoded)
+    return decoded
   }
 }
 
 module.exports = SchemaAddress
 
-},{"./base-schema-type":301,"web3":272}],301:[function(require,module,exports){
+},{"./base-schema-type":302,"web3":272}],302:[function(require,module,exports){
 /**
  * Base schema type that can be extended.
  */
@@ -50924,7 +50953,7 @@ class BaseSchemaType {
    * @param {*} value Value to process.
    * @return {*} The processed value.
    */
-  preprocess (value) {
+  cast (value) {
     return value
   }
 
@@ -50958,15 +50987,14 @@ class BaseSchemaType {
 
 module.exports = BaseSchemaType
 
-},{}],302:[function(require,module,exports){
+},{}],303:[function(require,module,exports){
 (function (Buffer){
-const BN = require('web3').utils.BN
 const BaseSchemaType = require('./base-schema-type')
 
 /**
- * Schema type for an array of bytes.
+ * Schema type for a buffer.
  */
-class SchemaByteArray extends BaseSchemaType {
+class SchemaBuffer extends BaseSchemaType {
   constructor (options) {
     super(options)
 
@@ -50977,7 +51005,7 @@ class SchemaByteArray extends BaseSchemaType {
           validate: (v) => {
             return (v.length === value)
           },
-          message: 'Invalid ByteArray length',
+          message: 'Invalid Buffer length',
           type: 'length'
         }
       },
@@ -50986,7 +51014,7 @@ class SchemaByteArray extends BaseSchemaType {
           validate: (v) => {
             return (v instanceof Buffer)
           },
-          message: 'ByteArray must be a Buffer',
+          message: 'Value must be a Buffer',
           type: 'required'
         }
       }
@@ -50999,15 +51027,8 @@ class SchemaByteArray extends BaseSchemaType {
     return this.options.length * 2
   }
 
-  preprocess (value) {
-    // Internally store as a Buffer.
-    if (value instanceof String || typeof value === 'string') {
-      return Buffer.from(value, 'hex')
-    } else {
-      const bnValue = new BN(value)
-      const length = Math.max(bnValue.byteLength(), this.options.length)
-      return bnValue.toBuffer('be', length)
-    }
+  cast (value) {
+    return Buffer.from(value, 'hex')
   }
 
   encode (value) {
@@ -51015,22 +51036,81 @@ class SchemaByteArray extends BaseSchemaType {
   }
 
   decode (value) {
-    // Externally expose a BigNum.
-    return new BN(value, 16).toBuffer('be', this.options.length)
+    const decoded = Buffer.from(value, 'hex')
+    this.validate(decoded)
+    return decoded
   }
 }
 
-module.exports = SchemaByteArray
+module.exports = SchemaBuffer
 
 }).call(this,require("buffer").Buffer)
 
-},{"./base-schema-type":301,"buffer":53,"web3":272}],303:[function(require,module,exports){
+},{"./base-schema-type":302,"buffer":53}],304:[function(require,module,exports){
+const BigNum = require('bn.js')
+const BaseSchemaType = require('./base-schema-type')
+
+class SchemaNumber extends BaseSchemaType {
+  constructor (options) {
+    super(options)
+
+    // Initialize available validators.
+    this.validators = {
+      length: (value) => {
+        return {
+          validate: (v) => {
+            return (v.byteLength() <= value)
+          },
+          message: 'Number is too large',
+          type: 'length'
+        }
+      },
+      required: (_) => {
+        return {
+          validate: (v) => {
+            return (BigNum.isBN(v))
+          },
+          message: 'Value must be a BigNum',
+          type: 'required'
+        }
+      }
+    }
+
+    this._initValidators()
+  }
+
+  get length () {
+    return this.options.length * 2
+  }
+
+  cast (value) {
+    return new BigNum(value)
+  }
+
+  encode (value) {
+    return value.toString('hex', this.length)
+  }
+
+  decode (value) {
+    const trimmed = value.replace(/\b(0(?!\b))+/g, '')
+    const decoded = new BigNum(trimmed, 'hex')
+    this.validate(decoded)
+    return decoded
+  }
+}
+
+module.exports = SchemaNumber
+
+},{"./base-schema-type":302,"bn.js":20}],305:[function(require,module,exports){
+const BigNum = require('bn.js')
+
 /**
  * Class used to define schemas.
  */
 class Schema {
   constructor (fields) {
     this.fields = this._parseFields(fields)
+    this.isArray = false
   }
 
   /**
@@ -51040,7 +51120,8 @@ class Schema {
   get length () {
     let length = 0
     for (let key in this.fields) {
-      length += this.fields[key].length
+      let field = this.fields[key]
+      length += field.length + Number(field.isArray) * 2
     }
     return length
   }
@@ -51052,7 +51133,11 @@ class Schema {
   validate (object) {
     for (let key in this.fields) {
       let field = this.fields[key]
-      field.validate(object[key])
+      if (field.isArray) {
+        object[key].forEach(field.validate.bind(field))
+      } else {
+        field.validate(object[key])
+      }
     }
   }
 
@@ -51061,10 +51146,14 @@ class Schema {
    * @param {*} object Object to fit.
    * @return {*} The modified object.
    */
-  preprocess (object) {
+  cast (object) {
     for (let key in this.fields) {
       let field = this.fields[key]
-      object[key] = field.preprocess(object[key])
+      if (field.isArray) {
+        object[key] = object[key].map(field.cast.bind(field))
+      } else {
+        object[key] = field.cast(object[key])
+      }
     }
     return object
   }
@@ -51078,7 +51167,14 @@ class Schema {
     let encoded = ''
     for (let key in this.fields) {
       let field = this.fields[key]
-      encoded += field.encode(object[key])
+      if (field.isArray) {
+        encoded += new BigNum(object[key].length).toString('hex', 2)
+        for (let i = 0; i < object[key].length; i++) {
+          encoded += field.encode(object[key][i])
+        }
+      } else {
+        encoded += field.encode(object[key])
+      }
     }
     return encoded
   }
@@ -51091,12 +51187,27 @@ class Schema {
   decode (str) {
     let decoded = {}
     let currentIndex = 0
+
+    const slice = (string, length) => {
+      const ret = string.slice(currentIndex, currentIndex + length)
+      currentIndex += length
+      return ret
+    }
+
     for (let key in this.fields) {
       let field = this.fields[key]
-      let slice = str.slice(currentIndex, currentIndex + field.length)
-      currentIndex += field.length
-      decoded[key] = field.decode(slice)
+      if (field.isArray) {
+        decoded[key] = []
+
+        let arrLen = new BigNum(slice(str, 2), 'hex').toNumber()
+        for (let i = 0; i < arrLen; i++) {
+          decoded[key].push(field.decode(slice(str, field.length)))
+        }
+      } else {
+        decoded[key] = field.decode(slice(str, field.length))
+      }
     }
+
     return decoded
   }
 
@@ -51107,12 +51218,10 @@ class Schema {
     let parsedFields = {}
     for (let key in fields) {
       let field = fields[key]
-      if (field.type instanceof Schema) {
-        // Using a Schema as a SchemaType is OK.
-        parsedFields[key] = field.type
-      } else {
-        parsedFields[key] = new field.type(field)
-      }
+      const isArray = Array.isArray(field.type)
+      const type = isArray ? field.type[0] : field.type
+      parsedFields[key] = (type instanceof Schema) ? type : new type(field)
+      parsedFields[key].isArray = isArray
     }
     return parsedFields
   }
@@ -51120,34 +51229,68 @@ class Schema {
 
 module.exports = Schema
 
-},{}],304:[function(require,module,exports){
+},{"bn.js":20}],306:[function(require,module,exports){
 const SignatureSchema = require('./signature')
-const TransferRecordSchema = require('./transfer-record')
+const TransferSchema = require('./transfer')
 const TransactionSchema = require('./transaction')
+const ProofSchema = require('./proof')
 
 module.exports = {
   SignatureSchema,
-  TransferRecordSchema,
-  TransactionSchema
+  TransferSchema,
+  TransactionSchema,
+  ProofSchema
 }
 
-},{"./signature":305,"./transaction":306,"./transfer-record":307}],305:[function(require,module,exports){
+},{"./proof":307,"./signature":308,"./transaction":309,"./transfer":310}],307:[function(require,module,exports){
 const Schema = require('../schema')
-const ByteArray = require('../schema-types/byte-array')
+const Number = require('../schema-types/number')
+const Bytes = require('../schema-types/bytes')
+const Signature = require('./signature')
+
+const TransferProofSchema = new Schema({
+  parsedSum: {
+    type: Number,
+    length: 16
+  },
+  leafIndex: {
+    type: Number,
+    length: 16
+  },
+  inclusionProof: {
+    type: [Bytes],
+    length: 48
+  },
+  signature: {
+    type: Signature
+  }
+})
+
+const TransactionProofSchema = new Schema({
+  transferProofs: {
+    type: [TransferProofSchema]
+  }
+})
+
+module.exports = TransactionProofSchema
+
+},{"../schema":305,"../schema-types/bytes":303,"../schema-types/number":304,"./signature":308}],308:[function(require,module,exports){
+const Schema = require('../schema')
+const Bytes = require('../schema-types/bytes')
 
 const SignatureSchema = new Schema({
   v: {
-    type: ByteArray,
+    type: Bytes,
     length: 1,
     required: true
   },
   r: {
-    type: ByteArray,
+    type: Bytes,
     length: 32,
     required: true
   },
   s: {
-    type: ByteArray,
+    type: Bytes,
     length: 32,
     required: true
   }
@@ -51155,28 +51298,30 @@ const SignatureSchema = new Schema({
 
 module.exports = SignatureSchema
 
-},{"../schema":303,"../schema-types/byte-array":302}],306:[function(require,module,exports){
+},{"../schema":305,"../schema-types/bytes":303}],309:[function(require,module,exports){
 const Schema = require('../schema')
-const TransferRecordSchema = require('./transfer-record')
-const SignatureSchema = require('./signature')
+const Number = require('../schema-types/number')
+const TransferSchema = require('./transfer')
 
 const TransactionSchema = new Schema({
-  transfer: {
-    type: TransferRecordSchema
+  block: {
+    type: Number,
+    length: 32,
+    required: true
   },
-  signature: {
-    type: SignatureSchema
+  transfers: {
+    type: [TransferSchema]
   }
 })
 
 module.exports = TransactionSchema
 
-},{"../schema":303,"./signature":305,"./transfer-record":307}],307:[function(require,module,exports){
+},{"../schema":305,"../schema-types/number":304,"./transfer":310}],310:[function(require,module,exports){
 const Schema = require('../schema')
 const Address = require('../schema-types/address')
-const ByteArray = require('../schema-types/byte-array')
+const Number = require('../schema-types/number')
 
-const TransferRecordSchema = new Schema({
+const TransferSchema = new Schema({
   sender: {
     type: Address,
     required: true
@@ -51186,30 +51331,25 @@ const TransferRecordSchema = new Schema({
     required: true
   },
   token: {
-    type: ByteArray,
+    type: Number,
     length: 4,
     required: true
   },
   start: {
-    type: ByteArray,
+    type: Number,
     length: 12,
     required: true
   },
   end: {
-    type: ByteArray,
+    type: Number,
     length: 12,
-    required: true
-  },
-  block: {
-    type: ByteArray,
-    length: 32,
     required: true
   }
 })
 
-module.exports = TransferRecordSchema
+module.exports = TransferSchema
 
-},{"../schema":303,"../schema-types/address":300,"../schema-types/byte-array":302}],308:[function(require,module,exports){
+},{"../schema":305,"../schema-types/address":301,"../schema-types/number":304}],311:[function(require,module,exports){
 const BN = require('web3').utils.BN
 
 /**
@@ -51226,23 +51366,12 @@ class MerkleTreeNode {
     this.hash = hash
     this.data = hash + this.sum.toString(16, 32)
   }
-
-  /**
-   * Checks if this node is equivalent to another.
-   * @param {*} other The other node.
-   * @return {boolean} `true` if the two nodes are equal, `false` otherwise.
-   */
-  equals (other) {
-    return ((BN.isBN(this.sum) && BN.isBN(other.sum)) &&
-      this.sum.eq(other.sum) &&
-      this.data === other.data)
-  }
 }
 
 module.exports = MerkleTreeNode
 
-},{"web3":272}],309:[function(require,module,exports){
-const BN = require('web3').utils.BN
+},{"web3":272}],312:[function(require,module,exports){
+const BigNum = require('bn.js')
 
 const MerkleSumTree = require('./sum-tree')
 const MerkleTreeNode = require('./merkle-tree-node')
@@ -51261,18 +51390,20 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    */
   parseLeaves (leaves) {
     // Pull out the start, end, and encoding of each transaction.
-    leaves = leaves.map((leaf) => {
-      return {
-        start: new BN(leaf.decoded.transfer.start),
-        end: new BN(leaf.decoded.transfer.end),
-        encoded: '0x' + leaf.encoded
-      }
+    leaves = leaves.reduce((prev, curr) => {
+      let parsedTransfers = curr.transfers.map((transfer) => {
+        return {
+          start: new BigNum(transfer.decoded.start),
+          end: new BigNum(transfer.decoded.end),
+          encoded: '0x' + curr.encoded
+        }
+      })
+      return prev.concat(parsedTransfers)
+    }, []).sort((a, b) => {
+      return a.start - b.start
     })
 
-    // Minimum and maximum coin IDs.
-
     let parsed = []
-
     if (leaves.length === 1) {
       parsed.push(new MerkleTreeNode(PlasmaMerkleSumTree.hash(leaves[0].encoded), constants.MAX_COIN_ID))
       return parsed
@@ -51319,10 +51450,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     let branch = []
 
     // User needs to be given this extra information.
-    branch.push({
-      hash: '',
-      sum: this.levels[0][index].sum
-    })
+    branch.push(new MerkleTreeNode('0x0000000000000000000000000000000000000000000000000000000000000000', this.levels[0][index].sum).data)
 
     let parentIndex
     let node
@@ -51330,13 +51458,10 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     for (let i = 0; i < this.levels.length - 1; i++) {
       node = this.levels[i][siblingIndex]
       if (node === undefined) {
-        node = PlasmaMerkleSumTree.emptyLeaf()
+        node = PlasmaMerkleSumTree.emptyLeaf().data
       }
 
-      branch.push({
-        hash: node.hash,
-        sum: node.sum
-      })
+      branch.push(node.data)
 
       // Figure out the parent and then figure out the parent's sibling.
       parentIndex = siblingIndex === 0 ? 0 : Math.floor(siblingIndex / 2)
@@ -51348,23 +51473,35 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
 
   /**
    * Checks whether a given transaction was included in a specific tree.
-   * @param {Number} index Index of the transaction to check.
+   * @param {Number} leafIndex Position of the transfer in the Merkle tree.
    * @param {Transaction} transaction A Transaction object.
+   * @param {Number} transferIndex Which transfer to check.
    * @param {*} proof An inclusion proof.
    * @param {*} root The root node of the tree to check.
    * @return {boolean} `true` if the transaction is in the tree, `false` otherwise.
    */
-  static checkInclusion (index, transaction, proof, root) {
+  static checkInclusion (leafIndex, transaction, transferIndex, inclusionProof, root) {
     if (transaction instanceof String || typeof transaction === 'string') {
       transaction = new Transaction(transaction)
     }
 
+    // Convert each element into a nicer object to work with.
+    // Each proof element is a 48 byte (96 character) string.
+    const proof = inclusionProof.map((element) => {
+      return {
+        hash: element.slice(0, 64),
+        sum: new BigNum(element.slice(-32), 'hex')
+      }
+    })
+
     // Covert the index into a bitstring
-    let path = new BN(index).toString(2, proof.length)
+    let path = new BigNum(leafIndex).toString(2, proof.length)
 
     // Reverse the order of the bitstring to start at the bottom of the tree
     path = path.split('').reverse().join('')
 
+    let leftSum = new BigNum(0)
+    let rightSum = new BigNum(0)
     let pathIndex = 0
     let proofElement
     let computedNode = new MerkleTreeNode(PlasmaMerkleSumTree.hash('0x' + transaction.encoded), proof[0].sum)
@@ -51372,19 +51509,24 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       proofElement = new MerkleTreeNode(proof[i].hash, proof[i].sum)
       if (path[pathIndex] === '0') {
         computedNode = PlasmaMerkleSumTree.parent(computedNode, proofElement)
+        rightSum.add(proof[i].sum)
       } else {
         computedNode = PlasmaMerkleSumTree.parent(proofElement, computedNode)
+        leftSum.add(proof[i].sum)
       }
       pathIndex++
     }
 
-    return computedNode.equals(root)
+    const transfer = transaction.transfers[transferIndex].decoded
+    const validSum = transfer.start.gte(leftSum) && transfer.end.lte(computedNode.sum.sub(rightSum))
+    const validRoot = computedNode.data === root
+    return validSum && validRoot
   }
 }
 
 module.exports = PlasmaMerkleSumTree
 
-},{"../constants":289,"../serialization":294,"./merkle-tree-node":308,"./sum-tree":310,"web3":272}],310:[function(require,module,exports){
+},{"../constants":289,"../serialization":294,"./merkle-tree-node":311,"./sum-tree":313,"bn.js":20}],313:[function(require,module,exports){
 const web3 = require('web3')
 const MerkleTreeNode = require('./merkle-tree-node')
 
@@ -51443,7 +51585,7 @@ class MerkleSumTree {
 
 module.exports = MerkleSumTree
 
-},{"./merkle-tree-node":308,"web3":272}],311:[function(require,module,exports){
+},{"./merkle-tree-node":311,"web3":272}],314:[function(require,module,exports){
 const int32ToHex = (x) => {
   x &= 0xFFFFFFFF
   let hex = x.toString(16).toUpperCase()
