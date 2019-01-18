@@ -1,5 +1,5 @@
 # plasma-utils
-[![Coverage Status](https://coveralls.io/repos/github/plasma-group/plasma-utils/badge.svg?branch=master)](https://coveralls.io/github/plasma-group/plasma-utils?branch=master) [![Build Status](https://travis-ci.org/plasma-group/plasma-utils.svg?branch=master)](https://travis-ci.org/plasma-group/plasma-utils)
+[![Coverage Status](https://coveralls.io/repos/github/plasma-group/plasma-utils/badge.svg?branch=master)](https://coveralls.io/github/plasma-group/plasma-utils?branch=master) [![Build Status](https://travis-ci.org/plasma-group/plasma-utils.svg?branch=master)](https://travis-ci.org/plasma-group/plasma-utils) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/deb13b3afcc44244ad3faa8b9be39585)](https://www.codacy.com/app/kfichter/plasma-utils?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=plasma-group/plasma-utils&amp;utm_campaign=Badge_Grade)
 
 `plasma-utils` is the set of core utilities for the Plasma Group series of projects. These utilities can be imported into other projects when necessary or convenient.
 
