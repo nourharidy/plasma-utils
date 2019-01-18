@@ -50740,6 +50740,8 @@ class BaseModel {
 
     this.args = this.schema.cast(args)
     this.schema.validate(args)
+
+    Object.assign(this, this.args)
   }
 
   get encoded () {
@@ -50760,13 +50762,17 @@ module.exports = BaseModel
 },{"web3":272}],296:[function(require,module,exports){
 const Signature = require('./signature')
 const Transfer = require('./transfer')
-const Transaction = require('./transaction')
+const SignedTransaction = require('./transaction').SignedTransaction
+const UnsignedTransaction = require('./transaction').UnsignedTransaction
+const Transaction = UnsignedTransaction // TODO: Remove this
 const Proof = require('./proof')
 
 module.exports = {
   Signature,
   Transfer,
   Transaction,
+  SignedTransaction,
+  UnsignedTransaction,
   Proof
 }
 
@@ -50808,16 +50814,31 @@ const Transfer = require('./transfer')
 /**
  * Represents a transaction.
  */
-class Transaction extends BaseModel {
+class UnsignedTransaction extends BaseModel {
   constructor (args) {
-    super(args, schemas.TransactionSchema)
+    super(args, schemas.UnsignedTransactionSchema)
     this.transfers = this.args.transfers.map((transfer) => {
       return new Transfer(transfer)
     })
   }
 }
 
-module.exports = Transaction
+/**
+ * Represents a signed transaction.
+ */
+class SignedTransaction extends BaseModel {
+  constructor (args) {
+    super(args, schemas.SignedTransactionSchema)
+    this.transfers = this.args.transfers.map((transfer) => {
+      return new Transfer(transfer)
+    })
+  }
+}
+
+module.exports = {
+  UnsignedTransaction,
+  SignedTransaction
+}
 
 },{"../schemas":306,"./base-model":295,"./transfer":300}],300:[function(require,module,exports){
 const BaseModel = require('./base-model')
@@ -50829,6 +50850,14 @@ const schemas = require('../schemas')
 class Transfer extends BaseModel {
   constructor (args) {
     super(args, schemas.TransferSchema)
+  }
+
+  get typedStart () {
+    return this.start.add(this.token)
+  }
+
+  get typedEnd () {
+    return this.end.add(this.token)
   }
 }
 
@@ -51236,13 +51265,16 @@ module.exports = Schema
 },{"bn.js":20}],306:[function(require,module,exports){
 const SignatureSchema = require('./signature')
 const TransferSchema = require('./transfer')
-const TransactionSchema = require('./transaction')
+const UnsignedTransactionSchema = require('./transaction')
+  .UnignedTransactionSchema
+const SignedTransactionSchema = require('./transaction').SignedTransactionSchema
 const ProofSchema = require('./proof')
 
 module.exports = {
   SignatureSchema,
   TransferSchema,
-  TransactionSchema,
+  SignedTransactionSchema,
+  UnsignedTransactionSchema,
   ProofSchema
 }
 
@@ -51306,11 +51338,26 @@ module.exports = SignatureSchema
 const Schema = require('../schema')
 const Number = require('../schema-types/number')
 const TransferSchema = require('./transfer')
+const SignatureSchema = require('./signature')
 
-const TransactionSchema = new Schema({
+const SignedTransactionSchema = new Schema({
   block: {
     type: Number,
-    length: 32,
+    length: 4,
+    required: true
+  },
+  transfers: {
+    type: [TransferSchema]
+  },
+  signatures: {
+    type: [SignatureSchema]
+  }
+})
+
+const UnignedTransactionSchema = new Schema({
+  block: {
+    type: Number,
+    length: 4,
     required: true
   },
   transfers: {
@@ -51318,9 +51365,12 @@ const TransactionSchema = new Schema({
   }
 })
 
-module.exports = TransactionSchema
+module.exports = {
+  SignedTransactionSchema,
+  UnignedTransactionSchema
+}
 
-},{"../schema":305,"../schema-types/number":304,"./transfer":310}],310:[function(require,module,exports){
+},{"../schema":305,"../schema-types/number":304,"./signature":308,"./transfer":310}],310:[function(require,module,exports){
 const Schema = require('../schema')
 const Address = require('../schema-types/address')
 const Number = require('../schema-types/number')
