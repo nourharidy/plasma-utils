@@ -1,4 +1,4 @@
-const BN = require('web3').utils.BN
+const BN = require('bn.js')
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
 
