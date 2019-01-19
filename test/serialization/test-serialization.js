@@ -34,7 +34,7 @@ const decodedTransaction = {
   ]
 }
 
-const encodedProof = '01' + '00000000000000000000000000000003' + '00000000000000000000000000000004' + '01' + '563f225cdc192264a90e7e4b402815479c71a16f1593afa4fc6323e18583472affffffffffffffffffffffffffffffff' + encodedSignature
+const encodedProof = '01' + '00000000000000000000000000000003' + '00000000000000000000000000000004' + encodedSignature + '01' + '563f225cdc192264a90e7e4b402815479c71a16f1593afa4fc6323e18583472affffffffffffffffffffffffffffffff'
 const decodedProof = {
   transferProofs: [
     {
