@@ -10,10 +10,10 @@ const Proof = models.Proof
 
 const should = chai.should()
 
-const encodedTransfer = '43aaDF3d5b44290385fe4193A1b13f15eF3A4FD5a12bcf1159aa01c739269391ae2d0be4037259f300000001000000000000000000000002000000000000000000000003'
+const encodedTransfer = '43aaDF3d5b44290385fe4193A1b13f15eF3A4FD5a12bCf1159Aa01C739269391AE2d0BE4037259f300000001000000000000000000000002000000000000000000000003'
 const decodedTransfer = {
   sender: '0x43aaDF3d5b44290385fe4193A1b13f15eF3A4FD5',
-  recipient: '0xa12bcf1159aa01c739269391ae2d0be4037259f3',
+  recipient: '0xa12bCf1159Aa01C739269391AE2d0BE4037259f3',
   token: new BigNum('1', 'hex'),
   start: new BigNum('2', 'hex'),
   end: new BigNum('3', 'hex')
@@ -58,6 +58,12 @@ describe('Serialization', () => {
 
     it('should be correctly decoded', () => {
       const tr = new Transfer(encodedTransfer)
+
+      tr.decoded.should.deep.equal(decodedTransfer)
+    })
+
+    it('should be correctly decoded with a buffer input', () => {
+      const tr = new Transfer(Buffer.from(encodedTransfer, 'hex'))
 
       tr.decoded.should.deep.equal(decodedTransfer)
     })

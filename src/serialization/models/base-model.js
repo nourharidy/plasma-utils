@@ -12,6 +12,10 @@ class BaseModel {
       args = this.schema.decode(args)
     }
 
+    if (Buffer.isBuffer(args)) {
+      args = this.schema.decode(args.toString('hex'))
+    }
+
     this.args = this.schema.cast(args)
     this.schema.validate(args)
 

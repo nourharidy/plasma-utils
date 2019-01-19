@@ -12,7 +12,7 @@ class SchemaAddress extends BaseSchemaType {
       required: (_) => {
         return {
           validate: (v) => {
-            return (web3.utils.isAddress(v))
+            return web3.utils.isAddress(v)
           },
           message: 'Address must be a valid Ethereum address',
           type: 'required'
@@ -34,7 +34,7 @@ class SchemaAddress extends BaseSchemaType {
   decode (value) {
     const decoded = '0x' + value
     this.validate(decoded)
-    return decoded
+    return web3.utils.toChecksumAddress(decoded)
   }
 }
 

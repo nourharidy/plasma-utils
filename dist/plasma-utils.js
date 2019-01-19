@@ -50841,6 +50841,7 @@ module.exports = {
 }
 
 },{"../schemas":306,"./base-model":295,"./transfer":300}],300:[function(require,module,exports){
+const BN = require('bn.js')
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
 
@@ -50853,17 +50854,35 @@ class Transfer extends BaseModel {
   }
 
   get typedStart () {
-    return this.start.add(this.token)
+    return new BN(
+      this.token.toString(
+        16,
+        schemas.TransferSchema.fields.token.options.length * 2
+      ) +
+        this.start.toString(
+          16,
+          schemas.TransferSchema.fields.start.options.length * 2
+        )
+    )
   }
 
   get typedEnd () {
-    return this.end.add(this.token)
+    return new BN(
+      this.token.toString(
+        16,
+        schemas.TransferSchema.fields.token.options.length * 2
+      ) +
+        this.end.toString(
+          16,
+          schemas.TransferSchema.fields.end.options.length * 2
+        )
+    )
   }
 }
 
 module.exports = Transfer
 
-},{"../schemas":306,"./base-model":295}],301:[function(require,module,exports){
+},{"../schemas":306,"./base-model":295,"bn.js":20}],301:[function(require,module,exports){
 const web3 = require('web3')
 const BaseSchemaType = require('./base-schema-type')
 
@@ -51142,8 +51161,8 @@ const BigNum = require('bn.js')
  */
 class Schema {
   constructor (fields) {
+    this.unparsedFields = fields
     this.fields = this._parseFields(fields)
-    this.isArray = false
   }
 
   /**
@@ -51253,7 +51272,7 @@ class Schema {
       let field = fields[key]
       const isArray = Array.isArray(field.type)
       const type = isArray ? field.type[0] : field.type
-      parsedFields[key] = (type instanceof Schema) ? type : new type(field)
+      parsedFields[key] = (type instanceof Schema) ? new Schema(type.unparsedFields) : new type(field)
       parsedFields[key].isArray = isArray
     }
     return parsedFields
@@ -51282,7 +51301,7 @@ module.exports = {
 const Schema = require('../schema')
 const Number = require('../schema-types/number')
 const Bytes = require('../schema-types/bytes')
-const Signature = require('./signature')
+const SignatureSchema = require('./signature')
 
 const TransferProofSchema = new Schema({
   parsedSum: {
@@ -51298,7 +51317,7 @@ const TransferProofSchema = new Schema({
     length: 48
   },
   signature: {
-    type: Signature
+    type: SignatureSchema
   }
 })
 
