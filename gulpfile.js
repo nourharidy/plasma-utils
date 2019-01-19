@@ -27,8 +27,7 @@ gulp.task('standalone', (done) => {
     .pipe(streamify(uglify()))
     .pipe(rename(OUT + '.min.js'))
     .pipe(gulp.dest(DEST))
-
-  done()
+    .on('end', done)
 })
 
 gulp.task('default', gulp.series('standalone'))

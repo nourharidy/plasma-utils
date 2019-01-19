@@ -50724,6 +50724,7 @@ module.exports = {
 }
 
 },{"./models":296,"./schemas":306}],295:[function(require,module,exports){
+(function (Buffer){
 const Web3 = require('web3')
 
 /**
@@ -50736,6 +50737,10 @@ class BaseModel {
 
     if (args instanceof String || typeof args === 'string') {
       args = this.schema.decode(args)
+    }
+
+    if (Buffer.isBuffer(args)) {
+      args = this.schema.decode(args.toString('hex'))
     }
 
     this.args = this.schema.cast(args)
@@ -50759,7 +50764,9 @@ class BaseModel {
 
 module.exports = BaseModel
 
-},{"web3":272}],296:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../../node_modules/is-buffer/index.js")})
+
+},{"../../../node_modules/is-buffer/index.js":136,"web3":272}],296:[function(require,module,exports){
 const Signature = require('./signature')
 const Transfer = require('./transfer')
 const SignedTransaction = require('./transaction').SignedTransaction
@@ -50897,7 +50904,7 @@ class SchemaAddress extends BaseSchemaType {
       required: (_) => {
         return {
           validate: (v) => {
-            return (web3.utils.isAddress(v))
+            return web3.utils.isAddress(v)
           },
           message: 'Address must be a valid Ethereum address',
           type: 'required'
@@ -50919,7 +50926,7 @@ class SchemaAddress extends BaseSchemaType {
   decode (value) {
     const decoded = '0x' + value
     this.validate(decoded)
-    return decoded
+    return web3.utils.toChecksumAddress(decoded)
   }
 }
 
@@ -51272,7 +51279,10 @@ class Schema {
       let field = fields[key]
       const isArray = Array.isArray(field.type)
       const type = isArray ? field.type[0] : field.type
-      parsedFields[key] = (type instanceof Schema) ? new Schema(type.unparsedFields) : new type(field)
+      parsedFields[key] =
+        type instanceof Schema
+          ? new Schema(type.unparsedFields)
+          : new type(field)
       parsedFields[key].isArray = isArray
     }
     return parsedFields
