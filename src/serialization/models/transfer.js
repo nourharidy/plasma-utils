@@ -1,3 +1,4 @@
+const BN = require('web3').utils.BN
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
 
@@ -10,11 +11,29 @@ class Transfer extends BaseModel {
   }
 
   get typedStart () {
-    return this.start.add(this.token)
+    return new BN(
+      this.token.toString(
+        16,
+        schemas.TransferSchema.fields.token.options.length * 2
+      ) +
+        this.start.toString(
+          16,
+          schemas.TransferSchema.fields.start.options.length * 2
+        )
+    )
   }
 
   get typedEnd () {
-    return this.end.add(this.token)
+    return new BN(
+      this.token.toString(
+        16,
+        schemas.TransferSchema.fields.token.options.length * 2
+      ) +
+        this.end.toString(
+          16,
+          schemas.TransferSchema.fields.end.options.length * 2
+        )
+    )
   }
 }
 
