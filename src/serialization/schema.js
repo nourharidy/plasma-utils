@@ -5,8 +5,8 @@ const BigNum = require('bn.js')
  */
 class Schema {
   constructor (fields) {
+    this.unparsedFields = fields
     this.fields = this._parseFields(fields)
-    this.isArray = false
   }
 
   /**
@@ -116,7 +116,10 @@ class Schema {
       let field = fields[key]
       const isArray = Array.isArray(field.type)
       const type = isArray ? field.type[0] : field.type
-      parsedFields[key] = (type instanceof Schema) ? type : new type(field)
+      parsedFields[key] =
+        type instanceof Schema
+          ? new Schema(type.unparsedFields)
+          : new type(field)
       parsedFields[key].isArray = isArray
     }
     return parsedFields

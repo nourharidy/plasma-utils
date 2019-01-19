@@ -1,7 +1,7 @@
 const Schema = require('../schema')
 const Number = require('../schema-types/number')
 const Bytes = require('../schema-types/bytes')
-const Signature = require('./signature')
+const SignatureSchema = require('./signature')
 
 const TransferProofSchema = new Schema({
   parsedSum: {
@@ -17,7 +17,7 @@ const TransferProofSchema = new Schema({
     length: 48
   },
   signature: {
-    type: Signature
+    type: SignatureSchema
   }
 })
 
