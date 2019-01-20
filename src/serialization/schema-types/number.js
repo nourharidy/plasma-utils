@@ -10,7 +10,7 @@ class SchemaNumber extends BaseSchemaType {
       length: (value) => {
         return {
           validate: (v) => {
-            return (v.byteLength() <= value)
+            return v.byteLength() <= value
           },
           message: 'Number is too large',
           type: 'length'
@@ -19,7 +19,7 @@ class SchemaNumber extends BaseSchemaType {
       required: (_) => {
         return {
           validate: (v) => {
-            return (BigNum.isBN(v))
+            return BigNum.isBN(v)
           },
           message: 'Value must be a BigNum',
           type: 'required'
@@ -35,7 +35,7 @@ class SchemaNumber extends BaseSchemaType {
   }
 
   cast (value) {
-    return new BigNum(value)
+    return new BigNum(value, 'hex')
   }
 
   encode (value) {
