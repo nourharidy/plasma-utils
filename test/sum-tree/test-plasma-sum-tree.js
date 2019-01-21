@@ -1,4 +1,5 @@
 const chai = require('chai')
+const BigNum = require('bn.js')
 
 const PlasmaMerkleSumTree = require('../../src/sum-tree/plasma-sum-tree')
 const models = require('../../src/serialization').models
@@ -100,6 +101,21 @@ describe('PlasmaMerkleSumTree', () => {
 
       const isValid = PlasmaMerkleSumTree.checkTransferProof(tx, TRIndex, transferProof, tree.root().data)
       isValid.should.be.false
+    })
+
+    it('shoudld getTransferProofBounds', () => {
+      const TRIndex = 0
+
+      const transferProof = tree.getTransferProof(index, TRIndex)
+      transferProof.args.leafIndex += 1
+
+      const proofBounds = PlasmaMerkleSumTree.getTransferProofBounds(tx, transferProof)
+
+      const expected = {
+        implicitStart: new BigNum(0),
+        implicitEnd: new BigNum(10)
+      }
+      proofBounds.should.deep.equal(expected)
     })
 
     it('should verify a random TransactionProof', () => {

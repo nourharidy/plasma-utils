@@ -195,6 +195,52 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     return validSum && validRoot // && validSignature
   }
 
+  static getTransferProofBounds (transaction, transferProof) {
+    if (transaction instanceof String || typeof transaction === 'string') {
+      transaction = new Transaction(transaction)
+    }
+    if (transferProof instanceof String || typeof transferProof === 'string') {
+      transferProof = new TransferProof(transferProof)
+    }
+
+    const leafIndex = transferProof.args.leafIndex
+    const inclusionProof = transferProof.args.inclusionProof
+
+    // Covert the index into a bitstring
+    let path = new BigNum(leafIndex).toString(2, inclusionProof.length)
+    // Reverse the order of the bitstring to start at the bottom of the tree
+    path = path
+      .split('')
+      .reverse()
+      .join('')
+
+    const transactionHash = PlasmaMerkleSumTree.hash('0x' + transaction.encoded)
+
+    let computedNode = new MerkleTreeNode(
+      transactionHash,
+      transferProof.args.parsedSum
+    )
+    let leftSum = new BigNum(0)
+    let rightSum = new BigNum(0)
+    for (let i = 0; i < inclusionProof.length; i++) {
+      const encodedSibling = inclusionProof[i]
+      const sibling = new MerkleTreeNode(
+        new BigNum(encodedSibling.slice(0, 32)).toString(16, 64),
+        new BigNum(encodedSibling.slice(32, 48))
+      )
+      if (path[i] === '0') {
+        rightSum.add(sibling.sum)
+      } else {
+        leftSum.add(sibling.sum)
+      }
+    }
+    const rootSum = computedNode.sum
+    return {
+      implicitStart: leftSum,
+      implicitEnd: rootSum.sub(rightSum)
+    }
+  }
+
   /**
    * Returns an inclusion proof for the leaf at a given index.
    * @param {*} Transaction A transaction element in the sum tree's leaves.
