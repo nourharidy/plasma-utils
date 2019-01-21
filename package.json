@@ -11,7 +11,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm test && npm run build && lint-staged"
+      "pre-commit": "npm test && npm run build && git add dist/ && lint-staged"
     }
   },
   "lint-staged": {
