@@ -2,7 +2,7 @@ const chai = require('chai')
 
 const PlasmaMerkleSumTree = require('../../src/sum-tree/plasma-sum-tree')
 const Transaction = require('../../src/serialization').models.Transaction
-const txutils = require('../tx-utils')
+const utils = require('../../src/utils')
 
 const should = chai.should()
 
@@ -76,7 +76,7 @@ describe('PlasmaMerkleSumTree', () => {
   })
 
   describe('checkInclusion', () => {
-    const txs = txutils.getSequentialTxs(100)
+    const txs = utils.getSequentialTxs(100)
     const tree = new PlasmaMerkleSumTree(txs)
     const index = Math.floor(Math.random() * 100)
     const proof = tree.getInclusionProof(index)
@@ -103,7 +103,7 @@ describe('PlasmaMerkleSumTree', () => {
   })
 
   describe('checkNonInclusion', () => {
-    const txs = txutils.getSequentialTxs(100)
+    const txs = utils.getSequentialTxs(100)
     const index = Math.floor(Math.random() * 99) + 1
     const removed = txs.splice(index - 1, 1)[0].transfers[0]
     const tree = new PlasmaMerkleSumTree(txs)
