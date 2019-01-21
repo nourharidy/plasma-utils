@@ -75,7 +75,7 @@ describe('PlasmaMerkleSumTree', () => {
     })
   })
 
-  describe('checkProof', () => {
+  describe('checkInclusion', () => {
     const txs = txutils.getSequentialTxs(100)
     const tree = new PlasmaMerkleSumTree(txs)
     const index = Math.floor(Math.random() * 100)
@@ -99,6 +99,20 @@ describe('PlasmaMerkleSumTree', () => {
       const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], 0, invalidProof, tree.root().data)
 
       isValid.should.be.false
+    })
+  })
+
+  describe('checkNonInclusion', () => {
+    const txs = txutils.getSequentialTxs(100)
+    const index = Math.floor(Math.random() * 99) + 1
+    const removed = txs.splice(index - 1, 1)[0].transfers[0]
+    const tree = new PlasmaMerkleSumTree(txs)
+    const proof = tree.getInclusionProof(index)
+
+    it('should verify a random proof', () => {
+      const isValid = PlasmaMerkleSumTree.checkNonInclusion(removed, index, txs[index], 0, proof, tree.root().data)
+
+      isValid.should.be.true
     })
   })
 })

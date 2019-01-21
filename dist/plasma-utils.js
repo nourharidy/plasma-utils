@@ -50746,6 +50746,12 @@ class BaseModel {
     this.args = this.schema.cast(args)
     this.schema.validate(args)
 
+    // Remove any reserved properties.
+    for (let prop of Object.getOwnPropertyNames(BaseModel.prototype)) {
+      if (prop in args) {
+        delete args[prop]
+      }
+    }
     Object.assign(this, this.args)
   }
 
@@ -51118,7 +51124,7 @@ class SchemaNumber extends BaseSchemaType {
       length: (value) => {
         return {
           validate: (v) => {
-            return (v.byteLength() <= value)
+            return v.byteLength() <= value
           },
           message: 'Number is too large',
           type: 'length'
@@ -51127,7 +51133,7 @@ class SchemaNumber extends BaseSchemaType {
       required: (_) => {
         return {
           validate: (v) => {
-            return (BigNum.isBN(v))
+            return BigNum.isBN(v)
           },
           message: 'Value must be a BigNum',
           type: 'required'

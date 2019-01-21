@@ -17,22 +17,29 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    */
   parseLeaves (leaves) {
     // Pull out the start, end, and encoding of each transaction.
-    leaves = leaves.reduce((prev, curr) => {
-      let parsedTransfers = curr.transfers.map((transfer) => {
-        return {
-          start: new BigNum(transfer.decoded.start),
-          end: new BigNum(transfer.decoded.end),
-          encoded: '0x' + curr.encoded
-        }
+    leaves = leaves
+      .reduce((prev, curr) => {
+        let parsedTransfers = curr.transfers.map((transfer) => {
+          return {
+            start: new BigNum(transfer.decoded.start),
+            end: new BigNum(transfer.decoded.end),
+            encoded: '0x' + curr.encoded
+          }
+        })
+        return prev.concat(parsedTransfers)
+      }, [])
+      .sort((a, b) => {
+        return a.start - b.start
       })
-      return prev.concat(parsedTransfers)
-    }, []).sort((a, b) => {
-      return a.start - b.start
-    })
 
     let parsed = []
     if (leaves.length === 1) {
-      parsed.push(new MerkleTreeNode(PlasmaMerkleSumTree.hash(leaves[0].encoded), constants.MAX_COIN_ID))
+      parsed.push(
+        new MerkleTreeNode(
+          PlasmaMerkleSumTree.hash(leaves[0].encoded),
+          constants.MAX_COIN_ID
+        )
+      )
       return parsed
     }
 
@@ -44,7 +51,9 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       curr = leaves[i]
       next = leaves[i + 1]
       sum = next.start.sub(curr.start)
-      parsed.push(new MerkleTreeNode(PlasmaMerkleSumTree.hash(curr.encoded), sum))
+      parsed.push(
+        new MerkleTreeNode(PlasmaMerkleSumTree.hash(curr.encoded), sum)
+      )
     }
 
     // Custom rule for the first leaf, if there's more than one.
@@ -52,14 +61,24 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     // the start of its sibling transaction minus the minimum possible coin ID.
     // This is to allow for "implicit" non-inclusion proofs
     // for any ranges where `end` is less than `start` of the first transaction.
-    parsed.unshift(new MerkleTreeNode(PlasmaMerkleSumTree.hash(leaves[0].encoded), leaves[1].start.sub(constants.MIN_COIN_ID)))
+    parsed.unshift(
+      new MerkleTreeNode(
+        PlasmaMerkleSumTree.hash(leaves[0].encoded),
+        leaves[1].start.sub(constants.MIN_COIN_ID)
+      )
+    )
 
     // Custom rule for the last leaf, if there's more than one.
     // Sum of the last leaf is always defined as
     // the maximum possible coin ID minus the start of the last transaction.
     // This is again to allow for "implicit" non-inclusion proofs
     // for any ranges where `start` is greater than `end`.
-    parsed.push(new MerkleTreeNode(PlasmaMerkleSumTree.hash(leaves[leaves.length - 1].encoded), constants.MAX_COIN_ID.sub(leaves[leaves.length - 1].start)))
+    parsed.push(
+      new MerkleTreeNode(
+        PlasmaMerkleSumTree.hash(leaves[leaves.length - 1].encoded),
+        constants.MAX_COIN_ID.sub(leaves[leaves.length - 1].start)
+      )
+    )
 
     return parsed
   }
@@ -77,7 +96,12 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     let branch = []
 
     // User needs to be given this extra information.
-    branch.push(new MerkleTreeNode('0x0000000000000000000000000000000000000000000000000000000000000000', this.levels[0][index].sum).data)
+    branch.push(
+      new MerkleTreeNode(
+        '0x0000000000000000000000000000000000000000000000000000000000000000',
+        this.levels[0][index].sum
+      ).data
+    )
 
     let parentIndex
     let node
@@ -85,7 +109,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     for (let i = 0; i < this.levels.length - 1; i++) {
       node = this.levels[i][siblingIndex]
       if (node === undefined) {
-        node = PlasmaMerkleSumTree.emptyLeaf().data
+        node = PlasmaMerkleSumTree.emptyLeaf()
       }
 
       branch.push(node.data)
@@ -107,7 +131,30 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    * @param {*} root The root node of the tree to check.
    * @return {boolean} `true` if the transaction is in the tree, `false` otherwise.
    */
-  static checkInclusion (leafIndex, transaction, transferIndex, inclusionProof, root) {
+  static checkInclusion (
+    leafIndex,
+    transaction,
+    transferIndex,
+    inclusionProof,
+    root
+  ) {
+    const { valid } = PlasmaMerkleSumTree.checkInclusionAndGetBounds(
+      leafIndex,
+      transaction,
+      transferIndex,
+      inclusionProof,
+      root
+    )
+    return valid
+  }
+
+  static checkInclusionAndGetBounds (
+    leafIndex,
+    transaction,
+    transferIndex,
+    inclusionProof,
+    root
+  ) {
     if (transaction instanceof String || typeof transaction === 'string') {
       transaction = new Transaction(transaction)
     }
@@ -125,13 +172,19 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     let path = new BigNum(leafIndex).toString(2, proof.length)
 
     // Reverse the order of the bitstring to start at the bottom of the tree
-    path = path.split('').reverse().join('')
+    path = path
+      .split('')
+      .reverse()
+      .join('')
 
     let leftSum = new BigNum(0)
     let rightSum = new BigNum(0)
     let pathIndex = 0
     let proofElement
-    let computedNode = new MerkleTreeNode(PlasmaMerkleSumTree.hash('0x' + transaction.encoded), proof[0].sum)
+    let computedNode = new MerkleTreeNode(
+      PlasmaMerkleSumTree.hash('0x' + transaction.encoded),
+      proof[0].sum
+    )
     for (let i = 1; i < proof.length; i++) {
       proofElement = new MerkleTreeNode(proof[i].hash, proof[i].sum)
       if (path[pathIndex] === '0') {
@@ -145,9 +198,39 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     }
 
     const transfer = transaction.transfers[transferIndex].decoded
-    const validSum = transfer.start.gte(leftSum) && transfer.end.lte(computedNode.sum.sub(rightSum))
+    const validSum =
+      transfer.start.gte(leftSum) &&
+      transfer.end.lte(computedNode.sum.sub(rightSum))
     const validRoot = computedNode.data === root
-    return validSum && validRoot
+
+    return {
+      valid: validRoot && validSum,
+      implicitStart: leftSum,
+      implicitEnd: computedNode.sum.sub(rightSum)
+    }
+  }
+
+  static checkNonInclusion (
+    range,
+    leafIndex,
+    transaction,
+    transferIndex,
+    inclusionProof,
+    root
+  ) {
+    const {
+      valid,
+      implicitStart,
+      implicitEnd
+    } = PlasmaMerkleSumTree.checkInclusionAndGetBounds(
+      leafIndex,
+      transaction,
+      transferIndex,
+      inclusionProof,
+      root
+    )
+
+    return valid && range.start.gte(implicitStart) && range.end.lte(implicitEnd)
   }
 }
 
