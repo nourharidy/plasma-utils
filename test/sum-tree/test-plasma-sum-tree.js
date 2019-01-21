@@ -75,44 +75,44 @@ describe('PlasmaMerkleSumTree', () => {
     })
   })
 
-  describe('checkInclusion', () => {
-    const txs = utils.getSequentialTxs(100)
+  describe('Proof Checking', () => {
+    const numDummyTransactions = 100
+    const txs = utils.getSequentialTxs(numDummyTransactions)
     const tree = new PlasmaMerkleSumTree(txs)
-    const index = Math.floor(Math.random() * 100)
-    const proof = tree.getInclusionProof(index)
+    const index = Math.floor(Math.random() * numDummyTransactions)
+    const tx = tree.leaves[index]
 
-    it('should verify a random proof', () => {
-      const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], 0, proof, tree.root().data)
+    it('should verify a random TransferProof', () => {
+      const TRIndex = 0
 
+      const transferProof = tree.getTransferProof(index, TRIndex)
+
+      const isValid = PlasmaMerkleSumTree.checkTransferProof(tx, TRIndex, transferProof, tree.root().data)
       isValid.should.be.true
     })
 
-    it('should not verify a proof with an invalid index', () => {
-      const isValid = PlasmaMerkleSumTree.checkInclusion(index + 1, txs[index], 0, proof, tree.root().data)
+    it('should should not verify a TransferProof with an invalid index', () => {
+      const TRIndex = 0
 
+      const transferProof = tree.getTransferProof(index, TRIndex)
+      transferProof.args.leafIndex += 1
+
+      const isValid = PlasmaMerkleSumTree.checkTransferProof(tx, TRIndex, transferProof, tree.root().data)
       isValid.should.be.false
     })
 
-    it('should not verify a proof with an invalid element', () => {
-      let invalidProof = tree.getInclusionProof(index)
-      invalidProof.pop() // Remove an element
-      const isValid = PlasmaMerkleSumTree.checkInclusion(index, txs[index], 0, invalidProof, tree.root().data)
+    it('should verify a random TransactionProof', () => {
+      const transactionProof = tree.getTransactionProof(tx)
 
-      isValid.should.be.false
-    })
-  })
-
-  describe('checkNonInclusion', () => {
-    const txs = utils.getSequentialTxs(100)
-    const index = Math.floor(Math.random() * 99) + 1
-    const removed = txs.splice(index - 1, 1)[0].transfers[0]
-    const tree = new PlasmaMerkleSumTree(txs)
-    const proof = tree.getInclusionProof(index)
-
-    it('should verify a random proof', () => {
-      const isValid = PlasmaMerkleSumTree.checkNonInclusion(removed, index, txs[index], 0, proof, tree.root().data)
-
+      const isValid = PlasmaMerkleSumTree.checkTransactionProof(tx, transactionProof, tree.root().data)
       isValid.should.be.true
+    })
+    it('should should not verify a TransactionProof with an invalid index', () => {
+      const transactionProof = tree.getTransactionProof(tx)
+      transactionProof.args.transferProofs[0].leafIndex += 1
+
+      const isValid = PlasmaMerkleSumTree.checkTransactionProof(tx, transactionProof, tree.root().data)
+      isValid.should.be.false
     })
   })
 })

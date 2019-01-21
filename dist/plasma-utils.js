@@ -16484,7 +16484,7 @@ module.exports={
   "_args": [
     [
       "elliptic@6.4.1",
-      "/home/k/Projects/pg/plasma-utils"
+      "/Users/ben/plasma/plasma-utils"
     ]
   ],
   "_from": "elliptic@6.4.1",
@@ -16511,7 +16511,7 @@ module.exports={
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.1.tgz",
   "_spec": "6.4.1",
-  "_where": "/home/k/Projects/pg/plasma-utils",
+  "_where": "/Users/ben/plasma/plasma-utils",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -40996,7 +40996,7 @@ module.exports = {
 };
 
 
-},{"underscore":218,"web3-eth-iban":258,"web3-utils":268}],228:[function(require,module,exports){
+},{"underscore":218,"web3-eth-iban":258,"web3-utils":271}],228:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -41639,7 +41639,7 @@ Method.prototype.request = function () {
 
 module.exports = Method;
 
-},{"underscore":218,"web3-core-helpers":228,"web3-core-promievent":230,"web3-core-subscriptions":235,"web3-utils":268}],230:[function(require,module,exports){
+},{"underscore":218,"web3-core-helpers":228,"web3-core-promievent":230,"web3-core-subscriptions":235,"web3-utils":271}],230:[function(require,module,exports){
 /*
  This file is part of web3.js.
 
@@ -42134,7 +42134,7 @@ module.exports = {
     BatchManager: BatchManager
 };
 
-},{"./batch.js":231,"./givenProvider.js":232,"./jsonrpc.js":234,"underscore":218,"web3-core-helpers":228,"web3-providers-http":263,"web3-providers-ipc":264,"web3-providers-ws":265}],234:[function(require,module,exports){
+},{"./batch.js":231,"./givenProvider.js":232,"./jsonrpc.js":234,"underscore":218,"web3-core-helpers":228,"web3-providers-http":263,"web3-providers-ipc":264,"web3-providers-ws":268}],234:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -42682,7 +42682,7 @@ var extend = function (pckg) {
 module.exports = extend;
 
 
-},{"web3-core-helpers":228,"web3-core-method":229,"web3-utils":268}],238:[function(require,module,exports){
+},{"web3-core-helpers":228,"web3-core-method":229,"web3-utils":271}],238:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -43083,7 +43083,7 @@ var coder = new ABICoder();
 
 module.exports = coder;
 
-},{"ethers/utils/abi-coder":100,"underscore":218,"web3-utils":268}],240:[function(require,module,exports){
+},{"ethers/utils/abi-coder":100,"underscore":218,"web3-utils":271}],240:[function(require,module,exports){
 (function (Buffer){
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 
@@ -44073,7 +44073,7 @@ module.exports = Accounts;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
 
-},{"any-promise":2,"buffer":53,"crypto":63,"crypto-browserify":63,"eth-lib/lib/account":240,"eth-lib/lib/bytes":242,"eth-lib/lib/hash":243,"eth-lib/lib/nat":244,"eth-lib/lib/rlp":245,"scrypt.js":192,"underscore":218,"uuid":247,"web3-core":238,"web3-core-helpers":228,"web3-core-method":229,"web3-utils":268}],249:[function(require,module,exports){
+},{"any-promise":2,"buffer":53,"crypto":63,"crypto-browserify":63,"eth-lib/lib/account":240,"eth-lib/lib/bytes":242,"eth-lib/lib/hash":243,"eth-lib/lib/nat":244,"eth-lib/lib/rlp":245,"scrypt.js":192,"underscore":218,"uuid":247,"web3-core":238,"web3-core-helpers":228,"web3-core-method":229,"web3-utils":271}],249:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -44980,7 +44980,7 @@ Contract.prototype._executeMethod = function _executeMethod(){
 
 module.exports = Contract;
 
-},{"underscore":218,"web3-core":238,"web3-core-helpers":228,"web3-core-method":229,"web3-core-promievent":230,"web3-core-subscriptions":235,"web3-eth-abi":239,"web3-utils":268}],250:[function(require,module,exports){
+},{"underscore":218,"web3-core":238,"web3-core-helpers":228,"web3-core-method":229,"web3-core-promievent":230,"web3-core-subscriptions":235,"web3-eth-abi":239,"web3-utils":271}],250:[function(require,module,exports){
 /*
     This file is part of web3.js.
     web3.js is free software: you can redistribute it and/or modify
@@ -46340,7 +46340,7 @@ Iban.prototype.toString = function () {
 
 module.exports = Iban;
 
-},{"bn.js":257,"web3-utils":268}],259:[function(require,module,exports){
+},{"bn.js":257,"web3-utils":271}],259:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -46492,7 +46492,7 @@ module.exports = Personal;
 
 
 
-},{"web3-core":238,"web3-core-helpers":228,"web3-core-method":229,"web3-net":262,"web3-utils":268}],260:[function(require,module,exports){
+},{"web3-core":238,"web3-core-helpers":228,"web3-core-method":229,"web3-net":262,"web3-utils":271}],260:[function(require,module,exports){
 /*
  This file is part of web3.js.
 
@@ -47040,7 +47040,7 @@ core.addProviders(Eth);
 module.exports = Eth;
 
 
-},{"./getNetworkType.js":260,"underscore":218,"web3-core":238,"web3-core-helpers":228,"web3-core-method":229,"web3-core-subscriptions":235,"web3-eth-abi":239,"web3-eth-accounts":248,"web3-eth-contract":249,"web3-eth-ens":253,"web3-eth-iban":258,"web3-eth-personal":259,"web3-net":262,"web3-utils":268}],262:[function(require,module,exports){
+},{"./getNetworkType.js":260,"underscore":218,"web3-core":238,"web3-core-helpers":228,"web3-core-method":229,"web3-core-subscriptions":235,"web3-eth-abi":239,"web3-eth-accounts":248,"web3-eth-contract":249,"web3-eth-ens":253,"web3-eth-iban":258,"web3-eth-personal":259,"web3-net":262,"web3-utils":271}],262:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -47109,7 +47109,7 @@ module.exports = Net;
 
 
 
-},{"web3-core":238,"web3-core-method":229,"web3-utils":268}],263:[function(require,module,exports){
+},{"web3-core":238,"web3-core-method":229,"web3-utils":271}],263:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -47547,6 +47547,148 @@ module.exports = IpcProvider;
 
 
 },{"oboe":148,"underscore":218,"web3-core-helpers":228}],265:[function(require,module,exports){
+var _global = (function() { return this || {}; })();
+var NativeWebSocket = _global.WebSocket || _global.MozWebSocket;
+var websocket_version = require('./version');
+
+
+/**
+ * Expose a W3C WebSocket class with just one or two arguments.
+ */
+function W3CWebSocket(uri, protocols) {
+	var native_instance;
+
+	if (protocols) {
+		native_instance = new NativeWebSocket(uri, protocols);
+	}
+	else {
+		native_instance = new NativeWebSocket(uri);
+	}
+
+	/**
+	 * 'native_instance' is an instance of nativeWebSocket (the browser's WebSocket
+	 * class). Since it is an Object it will be returned as it is when creating an
+	 * instance of W3CWebSocket via 'new W3CWebSocket()'.
+	 *
+	 * ECMAScript 5: http://bclary.com/2004/11/07/#a-13.2.2
+	 */
+	return native_instance;
+}
+if (NativeWebSocket) {
+	['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'].forEach(function(prop) {
+		Object.defineProperty(W3CWebSocket, prop, {
+			get: function() { return NativeWebSocket[prop]; }
+		});
+	});
+}
+
+/**
+ * Module exports.
+ */
+module.exports = {
+    'w3cwebsocket' : NativeWebSocket ? W3CWebSocket : null,
+    'version'      : websocket_version
+};
+
+},{"./version":266}],266:[function(require,module,exports){
+module.exports = require('../package.json').version;
+
+},{"../package.json":267}],267:[function(require,module,exports){
+module.exports={
+  "_from": "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
+  "_id": "websocket@1.0.26",
+  "_inBundle": false,
+  "_integrity": "",
+  "_location": "/web3-providers-ws/websocket",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "git",
+    "raw": "websocket@git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
+    "name": "websocket",
+    "escapedName": "websocket",
+    "rawSpec": "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
+    "saveSpec": "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
+    "fetchSpec": "git://github.com/frozeman/WebSocket-Node.git",
+    "gitCommittish": "6c72925e3f8aaaea8dc8450f97627e85263999f2"
+  },
+  "_requiredBy": [
+    "/web3-providers-ws"
+  ],
+  "_resolved": "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
+  "_spec": "websocket@git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
+  "_where": "/Users/ben/plasma/plasma-utils/node_modules/web3-providers-ws",
+  "author": {
+    "name": "Brian McKelvey",
+    "email": "brian@worlize.com",
+    "url": "https://www.worlize.com/"
+  },
+  "browser": "lib/browser.js",
+  "bugs": {
+    "url": "https://github.com/theturtle32/WebSocket-Node/issues"
+  },
+  "bundleDependencies": false,
+  "config": {
+    "verbose": false
+  },
+  "contributors": [
+    {
+      "name": "Iñaki Baz Castillo",
+      "email": "ibc@aliax.net",
+      "url": "http://dev.sipdoc.net"
+    }
+  ],
+  "dependencies": {
+    "debug": "^2.2.0",
+    "nan": "^2.3.3",
+    "typedarray-to-buffer": "^3.1.2",
+    "yaeti": "^0.0.6"
+  },
+  "deprecated": false,
+  "description": "Websocket Client & Server Library implementing the WebSocket protocol as specified in RFC 6455.",
+  "devDependencies": {
+    "buffer-equal": "^1.0.0",
+    "faucet": "^0.0.1",
+    "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
+    "gulp-jshint": "^2.0.4",
+    "jshint": "^2.0.0",
+    "jshint-stylish": "^2.2.1",
+    "tape": "^4.0.1"
+  },
+  "directories": {
+    "lib": "./lib"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "homepage": "https://github.com/theturtle32/WebSocket-Node",
+  "keywords": [
+    "websocket",
+    "websockets",
+    "socket",
+    "networking",
+    "comet",
+    "push",
+    "RFC-6455",
+    "realtime",
+    "server",
+    "client"
+  ],
+  "license": "Apache-2.0",
+  "main": "index",
+  "name": "websocket",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/theturtle32/WebSocket-Node.git"
+  },
+  "scripts": {
+    "gulp": "gulp",
+    "install": "(node-gyp rebuild 2> builderror.log) || (exit 0)",
+    "test": "faucet test/unit"
+  },
+  "version": "1.0.26"
+}
+
+},{}],268:[function(require,module,exports){
 (function (Buffer){
 /*
  This file is part of web3.js.
@@ -47952,7 +48094,7 @@ module.exports = WebsocketProvider;
 
 }).call(this,require("buffer").Buffer)
 
-},{"buffer":53,"underscore":218,"url":220,"web3-core-helpers":228,"websocket":273}],266:[function(require,module,exports){
+},{"buffer":53,"underscore":218,"url":220,"web3-core-helpers":228,"websocket":265}],269:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -48144,9 +48286,9 @@ module.exports = Shh;
 
 
 
-},{"web3-core":238,"web3-core-method":229,"web3-core-subscriptions":235,"web3-net":262}],267:[function(require,module,exports){
+},{"web3-core":238,"web3-core-method":229,"web3-core-subscriptions":235,"web3-net":262}],270:[function(require,module,exports){
 arguments[4][111][0].apply(exports,arguments)
-},{"dup":111}],268:[function(require,module,exports){
+},{"dup":111}],271:[function(require,module,exports){
 /*
  This file is part of web3.js.
 
@@ -48512,7 +48654,7 @@ module.exports = {
 };
 
 
-},{"./soliditySha3.js":269,"./utils.js":270,"ethjs-unit":110,"randomhex":176,"underscore":218}],269:[function(require,module,exports){
+},{"./soliditySha3.js":272,"./utils.js":273,"ethjs-unit":110,"randomhex":176,"underscore":218}],272:[function(require,module,exports){
 /*
  This file is part of web3.js.
 
@@ -48759,7 +48901,7 @@ var soliditySha3 = function () {
 
 module.exports = soliditySha3;
 
-},{"./utils.js":270,"bn.js":267,"underscore":218}],270:[function(require,module,exports){
+},{"./utils.js":273,"bn.js":270,"underscore":218}],273:[function(require,module,exports){
 /*
  This file is part of web3.js.
 
@@ -49232,12 +49374,12 @@ module.exports = {
     sha3: sha3
 };
 
-},{"bn.js":267,"eth-lib/lib/hash":98,"number-to-bn":146,"underscore":218,"utf8":222}],271:[function(require,module,exports){
+},{"bn.js":270,"eth-lib/lib/hash":98,"number-to-bn":146,"underscore":218,"utf8":222}],274:[function(require,module,exports){
 module.exports={
   "_args": [
     [
       "web3@1.0.0-beta.37",
-      "/home/k/Projects/pg/plasma-utils"
+      "/Users/ben/plasma/plasma-utils"
     ]
   ],
   "_from": "web3@1.0.0-beta.37",
@@ -49261,7 +49403,7 @@ module.exports={
   ],
   "_resolved": "https://registry.npmjs.org/web3/-/web3-1.0.0-beta.37.tgz",
   "_spec": "1.0.0-beta.37",
-  "_where": "/home/k/Projects/pg/plasma-utils",
+  "_where": "/Users/ben/plasma/plasma-utils",
   "author": {
     "name": "ethereum.org"
   },
@@ -49320,7 +49462,7 @@ module.exports={
   "version": "1.0.0-beta.37"
 }
 
-},{}],272:[function(require,module,exports){
+},{}],275:[function(require,module,exports){
 /*
     This file is part of web3.js.
 
@@ -49401,151 +49543,7 @@ core.addProviders(Web3);
 module.exports = Web3;
 
 
-},{"../package.json":271,"web3-bzz":225,"web3-core":238,"web3-eth":261,"web3-eth-personal":259,"web3-net":262,"web3-shh":266,"web3-utils":268}],273:[function(require,module,exports){
-var _global = (function() { return this || {}; })();
-var NativeWebSocket = _global.WebSocket || _global.MozWebSocket;
-var websocket_version = require('./version');
-
-
-/**
- * Expose a W3C WebSocket class with just one or two arguments.
- */
-function W3CWebSocket(uri, protocols) {
-	var native_instance;
-
-	if (protocols) {
-		native_instance = new NativeWebSocket(uri, protocols);
-	}
-	else {
-		native_instance = new NativeWebSocket(uri);
-	}
-
-	/**
-	 * 'native_instance' is an instance of nativeWebSocket (the browser's WebSocket
-	 * class). Since it is an Object it will be returned as it is when creating an
-	 * instance of W3CWebSocket via 'new W3CWebSocket()'.
-	 *
-	 * ECMAScript 5: http://bclary.com/2004/11/07/#a-13.2.2
-	 */
-	return native_instance;
-}
-if (NativeWebSocket) {
-	['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'].forEach(function(prop) {
-		Object.defineProperty(W3CWebSocket, prop, {
-			get: function() { return NativeWebSocket[prop]; }
-		});
-	});
-}
-
-/**
- * Module exports.
- */
-module.exports = {
-    'w3cwebsocket' : NativeWebSocket ? W3CWebSocket : null,
-    'version'      : websocket_version
-};
-
-},{"./version":274}],274:[function(require,module,exports){
-module.exports = require('../package.json').version;
-
-},{"../package.json":275}],275:[function(require,module,exports){
-module.exports={
-  "_from": "git://github.com/frozeman/WebSocket-Node.git#browserifyCompatible",
-  "_id": "websocket@1.0.26",
-  "_inBundle": false,
-  "_integrity": "",
-  "_location": "/plasma-utils/websocket",
-  "_phantomChildren": {
-    "ms": "2.0.0"
-  },
-  "_requested": {
-    "type": "git",
-    "raw": "websocket@git://github.com/frozeman/WebSocket-Node.git#browserifyCompatible",
-    "name": "websocket",
-    "escapedName": "websocket",
-    "rawSpec": "git://github.com/frozeman/WebSocket-Node.git#browserifyCompatible",
-    "saveSpec": "git://github.com/frozeman/WebSocket-Node.git#browserifyCompatible",
-    "fetchSpec": "git://github.com/frozeman/WebSocket-Node.git",
-    "gitCommittish": "browserifyCompatible"
-  },
-  "_requiredBy": [
-    "/plasma-utils/web3-providers-ws"
-  ],
-  "_resolved": "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
-  "_spec": "websocket@git://github.com/frozeman/WebSocket-Node.git#browserifyCompatible",
-  "_where": "/home/k/Projects/pg/plasma-utils/node_modules/web3-providers-ws",
-  "author": {
-    "name": "Brian McKelvey",
-    "email": "brian@worlize.com",
-    "url": "https://www.worlize.com/"
-  },
-  "browser": "lib/browser.js",
-  "bugs": {
-    "url": "https://github.com/theturtle32/WebSocket-Node/issues"
-  },
-  "bundleDependencies": false,
-  "config": {
-    "verbose": false
-  },
-  "contributors": [
-    {
-      "name": "Iñaki Baz Castillo",
-      "email": "ibc@aliax.net",
-      "url": "http://dev.sipdoc.net"
-    }
-  ],
-  "dependencies": {
-    "debug": "^2.2.0",
-    "nan": "^2.3.3",
-    "typedarray-to-buffer": "^3.1.2",
-    "yaeti": "^0.0.6"
-  },
-  "deprecated": false,
-  "description": "Websocket Client & Server Library implementing the WebSocket protocol as specified in RFC 6455.",
-  "devDependencies": {
-    "buffer-equal": "^1.0.0",
-    "faucet": "^0.0.1",
-    "gulp": "git+https://github.com/gulpjs/gulp.git#4.0",
-    "gulp-jshint": "^2.0.4",
-    "jshint": "^2.0.0",
-    "jshint-stylish": "^2.2.1",
-    "tape": "^4.0.1"
-  },
-  "directories": {
-    "lib": "./lib"
-  },
-  "engines": {
-    "node": ">=0.10.0"
-  },
-  "homepage": "https://github.com/theturtle32/WebSocket-Node",
-  "keywords": [
-    "websocket",
-    "websockets",
-    "socket",
-    "networking",
-    "comet",
-    "push",
-    "RFC-6455",
-    "realtime",
-    "server",
-    "client"
-  ],
-  "license": "Apache-2.0",
-  "main": "index",
-  "name": "websocket",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/theturtle32/WebSocket-Node.git"
-  },
-  "scripts": {
-    "gulp": "gulp",
-    "install": "(node-gyp rebuild 2> builderror.log) || (exit 0)",
-    "test": "faucet test/unit"
-  },
-  "version": "1.0.26"
-}
-
-},{}],276:[function(require,module,exports){
+},{"../package.json":274,"web3-bzz":225,"web3-core":238,"web3-eth":261,"web3-eth-personal":259,"web3-net":262,"web3-shh":269,"web3-utils":271}],276:[function(require,module,exports){
 var request = require('xhr-request')
 
 module.exports = function (url, options) {
@@ -50627,7 +50625,7 @@ module.exports = {
   NULL_ADDRESS
 }
 
-},{"web3":272}],290:[function(require,module,exports){
+},{"web3":275}],290:[function(require,module,exports){
 /**
  * A base class for loggers.
  */
@@ -50771,7 +50769,7 @@ module.exports = BaseModel
 
 }).call(this,{"isBuffer":require("../../../node_modules/is-buffer/index.js")})
 
-},{"../../../node_modules/is-buffer/index.js":136,"web3":272}],296:[function(require,module,exports){
+},{"../../../node_modules/is-buffer/index.js":136,"web3":275}],296:[function(require,module,exports){
 const Signature = require('./signature')
 const Transfer = require('./transfer')
 const SignedTransaction = require('./transaction').SignedTransaction
@@ -50859,7 +50857,11 @@ class SignedTransaction extends BaseModel {
     const unsigned = new UnsignedTransaction(Object.assign({}, this.args))
     return unsigned.transfers.every((transfer, i) => {
       const sig = this.signatures[i]
-      const sigString = '0x' + sig.r.toString('hex') + sig.s.toString('hex') + sig.v.toString('hex')
+      const sigString =
+        '0x' +
+        sig.r.toString('hex') +
+        sig.s.toString('hex') +
+        sig.v.toString('hex')
       const signer = web3.eth.accounts.recover(unsigned.hash, sigString)
       return signer === transfer.sender
     })
@@ -50871,7 +50873,7 @@ module.exports = {
   SignedTransaction
 }
 
-},{"../schemas":307,"./base-model":295,"./transfer":301,"web3":272}],300:[function(require,module,exports){
+},{"../schemas":307,"./base-model":295,"./transfer":301,"web3":275}],300:[function(require,module,exports){
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
 
@@ -50971,7 +50973,7 @@ class SchemaAddress extends BaseSchemaType {
 
 module.exports = SchemaAddress
 
-},{"./base-schema-type":303,"web3":272}],303:[function(require,module,exports){
+},{"./base-schema-type":303,"web3":275}],303:[function(require,module,exports){
 /**
  * Base schema type that can be extended.
  */
@@ -51500,12 +51502,16 @@ class MerkleTreeNode {
 
 module.exports = MerkleTreeNode
 
-},{"web3":272}],314:[function(require,module,exports){
+},{"web3":275}],314:[function(require,module,exports){
 const BigNum = require('bn.js')
 
 const MerkleSumTree = require('./sum-tree')
 const MerkleTreeNode = require('./merkle-tree-node')
-const Transaction = require('../serialization').models.Transaction
+const models = require('../serialization').models
+const Transaction = models.Transaction
+const Signature = models.Signature
+const TransferProof = models.TransferProof
+const TransactionProof = models.TransactionProof
 const constants = require('../constants')
 
 /**
@@ -51599,12 +51605,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     let branch = []
 
     // User needs to be given this extra information.
-    branch.push(
-      new MerkleTreeNode(
-        '0x0000000000000000000000000000000000000000000000000000000000000000',
-        this.levels[0][index].sum
-      ).data
-    )
+    branch.push(new MerkleTreeNode('0x0000000000000000000000000000000000000000000000000000000000000000', this.levels[0][index].sum).data)
 
     let parentIndex
     let node
@@ -51612,7 +51613,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     for (let i = 0; i < this.levels.length - 1; i++) {
       node = this.levels[i][siblingIndex]
       if (node === undefined) {
-        node = PlasmaMerkleSumTree.emptyLeaf()
+        node = PlasmaMerkleSumTree.emptyLeaf().data
       }
 
       branch.push(node.data)
@@ -51626,114 +51627,146 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
   }
 
   /**
-   * Checks whether a given transaction was included in a specific tree.
-   * @param {Number} leafIndex Position of the transfer in the Merkle tree.
-   * @param {Transaction} transaction A Transaction object.
-   * @param {Number} transferIndex Which transfer to check.
-   * @param {*} proof An inclusion proof.
-   * @param {*} root The root node of the tree to check.
-   * @return {boolean} `true` if the transaction is in the tree, `false` otherwise.
+   * Returns an inclusion proof for the leaf at a given index.
+   * @param {Number} index Index of the leaf to return a proof for.
+   * @return {*} A serializaed TransferProof object.
    */
-  static checkInclusion (
-    leafIndex,
-    transaction,
-    transferIndex,
-    inclusionProof,
-    root
-  ) {
-    const { valid } = PlasmaMerkleSumTree.checkInclusionAndGetBounds(
-      leafIndex,
-      transaction,
-      transferIndex,
-      inclusionProof,
-      root
-    )
-    return valid
+  getTransferProof (leafIndex, transferIndex) { // first arg is the index of the branch requested, second is the transfer that branch was included for
+    if (leafIndex >= this.levels[0].length || leafIndex < 0) {
+      throw new Error('Invalid leaf index')
+    }
+
+    // User needs to be given this extra information for calculating the bottommost node.
+    const parsedSum = this.levels[0][leafIndex].sum
+
+    // Each TR proof gets the signature for that transfer's sender
+    const signature = new Signature('1bd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c04224e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354') // this.leaves[leafIndex].signatures[transferIndex]
+
+    let branch = []
+
+    let parentIndex
+    let node
+    let siblingIndex = leafIndex + (leafIndex % 2 === 0 ? 1 : -1)
+    for (let i = 0; i < this.levels.length - 1; i++) {
+      node = this.levels[i][siblingIndex]
+      if (node === undefined) {
+        node = PlasmaMerkleSumTree.emptyLeaf().data
+      }
+
+      branch.push(node.data)
+
+      // Figure out the parent and then figure out the parent's sibling.
+      parentIndex = siblingIndex === 0 ? 0 : Math.floor(siblingIndex / 2)
+      siblingIndex = parentIndex + (parentIndex % 2 === 0 ? 1 : -1)
+    }
+    return new TransferProof({
+      parsedSum: parsedSum,
+      leafIndex: leafIndex,
+      inclusionProof: branch,
+      signature: signature.decoded
+    })
   }
 
-  static checkInclusionAndGetBounds (
-    leafIndex,
-    transaction,
-    transferIndex,
-    inclusionProof,
-    root
-  ) {
+  /**
+   * Returns whether a given signature is valid on the hash.
+   * @param {*} transactionHash The hash which was signed.
+   * @param {*} signature The signature.
+   * @return {*} A serializaed TransactionProof object.
+   */
+
+  static checkSignature (transactionHash, signature) {
+    return true
+  }
+
+  /**
+   * Checks whether a given transaction was included in the right branch for a particula transfer.
+   * @param {Transaction} transaction A Transaction object.
+   * @param {Number} transferIndex Which transfer to check.
+   * @param {*} transferProof A TransferProof object.
+   * @param {*} root The root node of the tree to check.
+   * @return {boolean} `true` if the transfer is in the tree, `false` otherwise.
+   */
+
+  static checkTransferProof (transaction, transferIndex, transferProof, root) {
     if (transaction instanceof String || typeof transaction === 'string') {
       transaction = new Transaction(transaction)
     }
+    if (transferProof instanceof String || typeof transferProof === 'string') {
+      transferProof = new TransferProof(transferProof)
+    }
 
-    // Convert each element into a nicer object to work with.
-    // Each proof element is a 48 byte (96 character) string.
-    const proof = inclusionProof.map((element) => {
-      return {
-        hash: element.slice(0, 64),
-        sum: new BigNum(element.slice(-32), 'hex')
-      }
-    })
+    const leafIndex = transferProof.args.leafIndex
+    const inclusionProof = transferProof.args.inclusionProof
 
     // Covert the index into a bitstring
-    let path = new BigNum(leafIndex).toString(2, proof.length)
-
+    let path = new BigNum(leafIndex).toString(2, inclusionProof.length)
     // Reverse the order of the bitstring to start at the bottom of the tree
-    path = path
-      .split('')
-      .reverse()
-      .join('')
+    path = path.split('').reverse().join('')
 
+    const transactionHash = PlasmaMerkleSumTree.hash('0x' + transaction.encoded)
+
+    const signature = transferProof.args.signature
+    if (!this.checkSignature(transactionHash, signature)) return false
+
+    let computedNode = new MerkleTreeNode(
+      transactionHash,
+      transferProof.args.parsedSum
+    )
     let leftSum = new BigNum(0)
     let rightSum = new BigNum(0)
-    let pathIndex = 0
-    let proofElement
-    let computedNode = new MerkleTreeNode(
-      PlasmaMerkleSumTree.hash('0x' + transaction.encoded),
-      proof[0].sum
-    )
-    for (let i = 1; i < proof.length; i++) {
-      proofElement = new MerkleTreeNode(proof[i].hash, proof[i].sum)
-      if (path[pathIndex] === '0') {
-        computedNode = PlasmaMerkleSumTree.parent(computedNode, proofElement)
-        rightSum.add(proof[i].sum)
+    for (let i = 0; i < inclusionProof.length; i++) {
+      const encodedSibling = inclusionProof[i]
+      const sibling = new MerkleTreeNode(
+        new BigNum(encodedSibling.slice(0, 32)).toString(16, 64),
+        new BigNum(encodedSibling.slice(32, 48))
+      )
+      if (path[i] === '0') {
+        computedNode = PlasmaMerkleSumTree.parent(computedNode, sibling)
+        rightSum.add(sibling.sum)
       } else {
-        computedNode = PlasmaMerkleSumTree.parent(proofElement, computedNode)
-        leftSum.add(proof[i].sum)
+        computedNode = PlasmaMerkleSumTree.parent(sibling, computedNode)
+        leftSum.add(sibling.sum)
       }
-      pathIndex++
     }
-
+    const rootSum = computedNode.sum
     const transfer = transaction.transfers[transferIndex].decoded
-    const validSum =
-      transfer.start.gte(leftSum) &&
-      transfer.end.lte(computedNode.sum.sub(rightSum))
+    const validSum = transfer.start.gte(leftSum) && transfer.end.lte(rootSum.sub(rightSum))
     const validRoot = computedNode.data === root
-
-    return {
-      valid: validRoot && validSum,
-      implicitStart: leftSum,
-      implicitEnd: computedNode.sum.sub(rightSum)
-    }
+    return validSum && validRoot
   }
 
-  static checkNonInclusion (
-    range,
-    leafIndex,
-    transaction,
-    transferIndex,
-    inclusionProof,
-    root
-  ) {
-    const {
-      valid,
-      implicitStart,
-      implicitEnd
-    } = PlasmaMerkleSumTree.checkInclusionAndGetBounds(
-      leafIndex,
-      transaction,
-      transferIndex,
-      inclusionProof,
-      root
-    )
+  /**
+   * Returns an inclusion proof for the leaf at a given index.
+   * @param {*} Transaction A transaction element in the sum tree's leaves.
+   * @return {*} A serializaed TransactionProof object.
+   */
 
-    return valid && range.start.gte(implicitStart) && range.end.lte(implicitEnd)
+  getTransactionProof (transaction) {
+    let transactionLeafIndices = []
+    for (let leafIndex in this.leaves) {
+      if (this.leaves[leafIndex] === transaction) transactionLeafIndices.push(new BigNum(leafIndex).toNumber())
+    }
+    const transferProofs = transactionLeafIndices.map((leafIndex) => {
+      return this.getTransferProof(leafIndex)
+    })
+    return new TransactionProof({
+      transferProofs: transferProofs.map((transferProof) => { return transferProof.decoded })
+    })
+  }
+
+  /**
+   * Checks whether a given transaction was included in the right branch for a particula transfer.
+   * @param {Transaction} transaction A Transaction object.
+   * @param {*} transactionProof A TransactionProof object.
+   * @param {*} root The root node of the tree to check.
+   * @return {boolean} `true` if the transaction is in the tree, `false` otherwise.
+   */
+
+  static checkTransactionProof (transaction, transactionProof, root) {
+    const transferProofs = transactionProof.args.transferProofs.map((transferProof) => { return { args: transferProof } })
+    return transferProofs.every((transferProof, transferIndex) => {
+      return this.checkTransferProof(transaction, transferIndex, transferProof, root)
+    })
   }
 }
 
@@ -51798,16 +51831,81 @@ class MerkleSumTree {
 
 module.exports = MerkleSumTree
 
-},{"./merkle-tree-node":313,"web3":272}],316:[function(require,module,exports){
+},{"./merkle-tree-node":313,"web3":275}],316:[function(require,module,exports){
+const BigNum = require('bn.js')
+const Transaction = require('./serialization').models.Transaction
+
 const int32ToHex = (x) => {
-  x &= 0xFFFFFFFF
+  x &= 0xffffffff
   let hex = x.toString(16).toUpperCase()
   return ('0000000000000000' + hex).slice(-16)
 }
 
-module.exports = {
-  int32ToHex: int32ToHex
+/**
+ * Returns a list of `n` sequential transactions.
+ * @param {*} n Number of sequential transactions to return.
+ * @return {*} A list of sequential transactions.
+ */
+const getSequentialTxs = (n) => {
+  let txs = []
+
+  for (let i = 0; i < n; i++) {
+    txs[i] = new Transaction({
+      transfers: [
+        {
+          sender: '0x000000000000000f000000000000000000000000', // random fs here because contract crashes on decoding bytes20 of all zeros to address
+          recipient: '0x000000000000f000000000000000000000000000',
+          token: 0,
+          start: i * 10,
+          end: (i + 1) * 10,
+          block: 0
+        }
+      ],
+      signatures: [
+        {
+          v: '1b',
+          r: 'd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c042',
+          s: '24e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
+        }
+      ]
+    })
+  }
+
+  return txs
 }
 
-},{}]},{},[1])
+/**
+ * Returns a transaction generated from a fuzzed encoding.
+ * @param {*} n Number of sequential transactions to return.
+ * @return {*} A list of sequential transactions.
+ */
+
+function genRandomTX (blockNum, senderAddress, recipientAddress, numTransfers) {
+  let randomTransfers = []
+  for (let i = 0; i < numTransfers; i++) {
+    // fuzz a random encoding to test decoding with
+    let randomVals = ''
+    for (let i = 0; i < 28; i++) {
+      // random start, end, type = 12+12+4 bytes
+      const randHex = Math.floor(Math.random() * 256)
+      randomVals += new BigNum(randHex, 10).toString(16, 2)
+    }
+    randomTransfers +=
+      senderAddress.slice(2) + recipientAddress.slice(2) + randomVals
+    // can't have invalid addresses so ignore this partthe 33rd byte is the numTransfers which isn't random--it's 4
+  }
+  return (
+    new BigNum(blockNum).toString(16, 8) +
+    new BigNum(numTransfers).toString(16, 2) +
+    randomTransfers
+  )
+}
+
+module.exports = {
+  int32ToHex: int32ToHex,
+  getSequentialTxs: getSequentialTxs,
+  genRandomTX: genRandomTX
+}
+
+},{"./serialization":294,"bn.js":20}]},{},[1])
 //# sourceMappingURL=plasma-utils.js.map
