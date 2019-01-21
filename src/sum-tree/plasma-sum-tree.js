@@ -3,7 +3,6 @@ const BigNum = require('bn.js')
 const MerkleSumTree = require('./sum-tree')
 const MerkleTreeNode = require('./merkle-tree-node')
 const models = require('../serialization').models
-const Transaction = models.Transaction
 const UnsignedTransaction = models.UnsignedTransaction
 const Signature = models.Signature
 const TransferProof = models.TransferProof
@@ -24,7 +23,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     // Pull out the start, end, and encoding of each transaction.
     leaves = leaves
       .reduce((prev, curr) => {
-        const unsigned = new UnsignedTransaction(curr.args)
+        const unsigned = new UnsignedTransaction(curr.encoded)
         let parsedTransfers = curr.transfers.map((transfer) => {
           return {
             start: new BigNum(transfer.decoded.start),
@@ -144,15 +143,11 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    */
 
   static checkTransferProof (transaction, transferIndex, transferProof, root) {
-    if (transaction instanceof String || typeof transaction === 'string') {
-      transaction = new Transaction(transaction)
-    }
-    if (transferProof instanceof String || typeof transferProof === 'string') {
-      transferProof = new TransferProof(transferProof)
-    }
+    transaction = new UnsignedTransaction(transaction)
+    transferProof = new TransferProof(transferProof)
 
-    const leafIndex = transferProof.args.leafIndex
-    const inclusionProof = transferProof.args.inclusionProof
+    const leafIndex = transferProof.leafIndex
+    const inclusionProof = transferProof.inclusionProof
 
     // Covert the index into a bitstring
     let path = new BigNum(leafIndex).toString(2, inclusionProof.length)
@@ -166,7 +161,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
 
     let computedNode = new MerkleTreeNode(
       transactionHash,
-      transferProof.args.parsedSum
+      transferProof.parsedSum
     )
     let leftSum = new BigNum(0)
     let rightSum = new BigNum(0)
@@ -193,15 +188,11 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
   }
 
   static getTransferProofBounds (transaction, transferProof) {
-    if (transaction instanceof String || typeof transaction === 'string') {
-      transaction = new Transaction(transaction)
-    }
-    if (transferProof instanceof String || typeof transferProof === 'string') {
-      transferProof = new TransferProof(transferProof)
-    }
+    transaction = new UnsignedTransaction(transaction)
+    transferProof = new TransferProof(transferProof)
 
-    const leafIndex = transferProof.args.leafIndex
-    const inclusionProof = transferProof.args.inclusionProof
+    const leafIndex = transferProof.leafIndex
+    const inclusionProof = transferProof.inclusionProof
 
     // Covert the index into a bitstring
     let path = new BigNum(leafIndex).toString(2, inclusionProof.length)
@@ -215,7 +206,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
 
     let computedNode = new MerkleTreeNode(
       transactionHash,
-      transferProof.args.parsedSum
+      transferProof.parsedSum
     )
     let leftSum = new BigNum(0)
     let rightSum = new BigNum(0)
@@ -273,21 +264,18 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    */
 
   static checkTransactionProof (transaction, transactionProof, root) {
-    const transferProofs = transactionProof.args.transferProofs.map(
-      (transferProof) => {
-        return { args: transferProof }
+    return transactionProof.transferProofs.every(
+      (transferProof, transferIndex) => {
+        return (
+          this.checkTransferProof(
+            transaction,
+            transferIndex,
+            transferProof,
+            root
+          ) && transaction.checkSigs()
+        )
       }
     )
-    return transferProofs.every((transferProof, transferIndex) => {
-      return (
-        this.checkTransferProof(
-          transaction,
-          transferIndex,
-          transferProof,
-          root
-        ) && transaction.checkSigs()
-      )
-    })
   }
 }
 

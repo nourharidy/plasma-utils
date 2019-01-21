@@ -97,7 +97,7 @@ describe('PlasmaMerkleSumTree', () => {
       const TRIndex = 0
 
       const transferProof = tree.getTransferProof(index, TRIndex)
-      transferProof.args.leafIndex += 1
+      transferProof.leafIndex += 1
 
       const isValid = PlasmaMerkleSumTree.checkTransferProof(tx, TRIndex, transferProof, tree.root().data)
       isValid.should.be.false
@@ -107,7 +107,7 @@ describe('PlasmaMerkleSumTree', () => {
       const TRIndex = 0
 
       const transferProof = tree.getTransferProof(index, TRIndex)
-      transferProof.args.leafIndex += 1
+      transferProof.leafIndex += 1
 
       const proofBounds = PlasmaMerkleSumTree.getTransferProofBounds(tx, transferProof)
 
@@ -126,7 +126,7 @@ describe('PlasmaMerkleSumTree', () => {
     })
     it('should should not verify a TransactionProof with an invalid index', () => {
       const transactionProof = tree.getTransactionProof(tx)
-      transactionProof.args.transferProofs[0].leafIndex += 1
+      transactionProof.transferProofs[0].leafIndex += 1
 
       const isValid = PlasmaMerkleSumTree.checkTransactionProof(tx, transactionProof, tree.root().data)
       isValid.should.be.false
