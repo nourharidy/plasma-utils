@@ -51510,6 +51510,7 @@ const MerkleTreeNode = require('./merkle-tree-node')
 const models = require('../serialization').models
 const Transaction = models.Transaction
 const Signature = models.Signature
+// const SignedTransaction = models.SignedTransaction
 const TransferProof = models.TransferProof
 const TransactionProof = models.TransactionProof
 const constants = require('../constants')
@@ -51705,8 +51706,10 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
 
     const transactionHash = PlasmaMerkleSumTree.hash('0x' + transaction.encoded)
 
-    // still need to check this
+    // check valid sig
+    // debugger
     // const signature = transferProof.args.signature
+    // SignedTransaction
 
     let computedNode = new MerkleTreeNode(
       transactionHash,
@@ -51733,7 +51736,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     const validSum =
       transfer.start.gte(leftSum) && transfer.end.lte(rootSum.sub(rightSum))
     const validRoot = computedNode.data === root
-    return validSum && validRoot
+    return validSum && validRoot // && validSignature
   }
 
   /**

@@ -1,7 +1,8 @@
 const chai = require('chai')
 
 const PlasmaMerkleSumTree = require('../../src/sum-tree/plasma-sum-tree')
-const Transaction = require('../../src/serialization').models.Transaction
+const models = require('../../src/serialization').models
+const Transaction = models.Transaction
 const utils = require('../../src/utils')
 
 const should = chai.should()
