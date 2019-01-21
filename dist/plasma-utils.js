@@ -51143,7 +51143,7 @@ class SchemaNumber extends BaseSchemaType {
   }
 
   cast (value) {
-    return new BigNum(value)
+    return new BigNum(value, 'hex')
   }
 
   encode (value) {
@@ -51322,12 +51322,12 @@ const TransferProofSchema = new Schema({
     type: Number,
     length: 16
   },
+  signature: {
+    type: SignatureSchema
+  },
   inclusionProof: {
     type: [Bytes],
     length: 48
-  },
-  signature: {
-    type: SignatureSchema
   }
 })
 

@@ -19,6 +19,12 @@ class BaseModel {
     this.args = this.schema.cast(args)
     this.schema.validate(args)
 
+    // Remove any reserved properties.
+    for (let prop of Object.getOwnPropertyNames(BaseModel.prototype)) {
+      if (prop in args) {
+        delete args[prop]
+      }
+    }
     Object.assign(this, this.args)
   }
 
