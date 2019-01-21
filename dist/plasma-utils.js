@@ -51596,45 +51596,6 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
   /**
    * Returns an inclusion proof for the leaf at a given index.
    * @param {Number} index Index of the leaf to return a proof for.
-   * @return {*} A list of sibling nodes that can be used to check inclusion of the node.
-   */
-  getInclusionProof (index) {
-    if (index >= this.levels[0].length || index < 0) {
-      throw new Error('Invalid leaf index')
-    }
-
-    let branch = []
-
-    // User needs to be given this extra information.
-    branch.push(
-      new MerkleTreeNode(
-        '0x0000000000000000000000000000000000000000000000000000000000000000',
-        this.levels[0][index].sum
-      ).data
-    )
-
-    let parentIndex
-    let node
-    let siblingIndex = index + (index % 2 === 0 ? 1 : -1)
-    for (let i = 0; i < this.levels.length - 1; i++) {
-      node = this.levels[i][siblingIndex]
-      if (node === undefined) {
-        node = PlasmaMerkleSumTree.emptyLeaf().data
-      }
-
-      branch.push(node.data)
-
-      // Figure out the parent and then figure out the parent's sibling.
-      parentIndex = siblingIndex === 0 ? 0 : Math.floor(siblingIndex / 2)
-      siblingIndex = parentIndex + (parentIndex % 2 === 0 ? 1 : -1)
-    }
-
-    return branch
-  }
-
-  /**
-   * Returns an inclusion proof for the leaf at a given index.
-   * @param {Number} index Index of the leaf to return a proof for.
    * @return {*} A serializaed TransferProof object.
    */
   getTransferProof (leafIndex, transferIndex) {
