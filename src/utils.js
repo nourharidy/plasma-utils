@@ -1,10 +1,27 @@
 const BigNum = require('bn.js')
-const SignedTransaction = require('./serialization').models.SignedTransaction
+const Web3 = require('web3')
+const models = require('./serialization').models
+const accounts = require('./constants').ACCOUNTS
+const UnsignedTransaction = models.UnsignedTransaction
+const SignedTransaction = models.SignedTransaction
+const web3 = new Web3()
 
 const int32ToHex = (x) => {
   x &= 0xffffffff
   let hex = x.toString(16).toUpperCase()
   return ('0000000000000000' + hex).slice(-16)
+}
+
+const getRandomElement = (arr) => {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
+const getRandomAccount = () => {
+  return getRandomElement(accounts)
+}
+
+const sign = (data, key) => {
+  return web3.eth.accounts.sign(data, key)
 }
 
 /**
@@ -16,25 +33,26 @@ const getSequentialTxs = (n) => {
   let txs = []
 
   for (let i = 0; i < n; i++) {
-    txs[i] = new SignedTransaction({
+    let sender = getRandomAccount()
+    let recipient = getRandomAccount()
+
+    let unsignedTx = new UnsignedTransaction({
+      block: 0,
       transfers: [
         {
-          sender: '0x000000000000000f000000000000000000000000', // random fs here because contract crashes on decoding bytes20 of all zeros to address
-          recipient: '0x000000000000f000000000000000000000000000',
+          sender: sender.address,
+          recipient: recipient.address,
           token: 0,
           start: i * 10,
-          end: (i + 1) * 10,
-          block: 0
-        }
-      ],
-      signatures: [
-        {
-          v: '1b',
-          r: 'd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c042',
-          s: '24e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
+          end: (i + 1) * 10
         }
       ]
     })
+    let signedTx = new SignedTransaction({
+      ...unsignedTx,
+      ...{ signatures: [sign(unsignedTx.hash, sender.key)] }
+    })
+    txs.push(signedTx)
   }
 
   return txs
