@@ -11,7 +11,6 @@ class BaseModel {
     if (args instanceof String || typeof args === 'string') {
       args = this.schema.decode(args)
     }
-
     if (Buffer.isBuffer(args)) {
       args = this.schema.decode(args.toString('hex'))
     }

@@ -50738,7 +50738,6 @@ class BaseModel {
     if (args instanceof String || typeof args === 'string') {
       args = this.schema.decode(args)
     }
-
     if (Buffer.isBuffer(args)) {
       args = this.schema.decode(args.toString('hex'))
     }
@@ -50822,9 +50821,12 @@ class TransactionProof extends BaseModel {
 module.exports = TransactionProof
 
 },{"../schemas":307,"./base-model":295}],299:[function(require,module,exports){
+const Web3 = require('web3')
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
 const Transfer = require('./transfer')
+
+const web3 = new Web3()
 
 /**
  * Represents a transaction.
@@ -50848,6 +50850,20 @@ class SignedTransaction extends BaseModel {
       return new Transfer(transfer)
     })
   }
+
+  /**
+   * Checks if this transaction is correctly signed.
+   * @return {boolean} `true` if the transaction is correctly signed, `false` otherwise.
+   */
+  checkSigs () {
+    const unsigned = new UnsignedTransaction(Object.assign({}, this.args))
+    return unsigned.transfers.every((transfer, i) => {
+      const sig = this.signatures[i]
+      const sigString = '0x' + sig.r.toString('hex') + sig.s.toString('hex') + sig.v.toString('hex')
+      const signer = web3.eth.accounts.recover(unsigned.hash, sigString)
+      return signer === transfer.sender
+    })
+  }
 }
 
 module.exports = {
@@ -50855,7 +50871,7 @@ module.exports = {
   SignedTransaction
 }
 
-},{"../schemas":307,"./base-model":295,"./transfer":301}],300:[function(require,module,exports){
+},{"../schemas":307,"./base-model":295,"./transfer":301,"web3":272}],300:[function(require,module,exports){
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
 

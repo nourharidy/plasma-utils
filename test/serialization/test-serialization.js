@@ -5,7 +5,8 @@ const BigNum = require('bn.js')
 const models = require('../../src/serialization').models
 const Transfer = models.Transfer
 const Signature = models.Signature
-const Transaction = models.Transaction
+const UnsignedTransaction = models.UnsignedTransaction
+const SignedTransaction = models.SignedTransaction
 const TransactionProof = models.TransactionProof
 const TransferProof = models.TransferProof
 
@@ -27,11 +28,22 @@ const decodedSignature = {
   s: '24e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
 }
 
-const encodedTransaction = '00000001' + '01' + encodedTransfer
-const decodedTransaction = {
+const encodedUnsignedTransaction = '00000001' + '01' + encodedTransfer
+const decodedUnsignedTransaction = {
   block: new BigNum('1', 'hex'),
   transfers: [
     decodedTransfer
+  ]
+}
+
+const encodedSignedTransaction = encodedUnsignedTransaction + '01' + encodedSignature
+const decodedSignedTransaction = {
+  block: new BigNum('1', 'hex'),
+  transfers: [
+    decodedTransfer
+  ],
+  signatures: [
+    decodedSignature
   ]
 }
 
@@ -114,17 +126,31 @@ describe('Serialization', () => {
     })
   })
 
-  describe('Transaction', () => {
+  describe('UnsignedTransaction', () => {
     it('should be correctly encoded', () => {
-      const tx = new Transaction(decodedTransaction)
+      const tx = new UnsignedTransaction(decodedUnsignedTransaction)
 
-      tx.encoded.should.equal(encodedTransaction)
+      tx.encoded.should.equal(encodedUnsignedTransaction)
     })
 
     it('should be correctly decoded', () => {
-      const tx = new Transaction(encodedTransaction)
+      const tx = new UnsignedTransaction(encodedUnsignedTransaction)
 
-      tx.decoded.should.deep.equal(decodedTransaction)
+      tx.decoded.should.deep.equal(decodedUnsignedTransaction)
+    })
+  })
+
+  describe('SignedTransaction', () => {
+    it('should be correctly encoded', () => {
+      const tx = new SignedTransaction(decodedSignedTransaction)
+
+      tx.encoded.should.equal(encodedSignedTransaction)
+    })
+
+    it('should be correctly decoded', () => {
+      const tx = new SignedTransaction(encodedSignedTransaction)
+
+      tx.decoded.should.deep.equal(decodedSignedTransaction)
     })
   })
 
