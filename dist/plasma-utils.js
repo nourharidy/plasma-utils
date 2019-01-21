@@ -50615,6 +50615,29 @@ const MIN_COIN_ID = new BN(0)
 const MAX_COIN_ID = new BN('ffffffffffffffffffffffffffffffff', 16)
 const NULL_ADDRESS = '0x0000000000000000000000000000000000000000'
 
+const ACCOUNTS = [
+  {
+    address: '0x9cf84967C75f183dB3046C0Ff91899E22c24E80d',
+    key: '0x350dac99930341c3271c073481edb03a82a0482fe9868c77e97d0c593b7b92f1'
+  },
+  {
+    address: '0xD28ae86e926d9F427031195A2f376a6dF47f5e05',
+    key: '0xf25543aa7814b814576ce0c8adae2ebfdb1dce70b948092678bdad3bf552d68b'
+  },
+  {
+    address: '0x7c6483dDD40A5003dE503E5726a67F8f728AF76d',
+    key: '0xcd1148e825612fbd3c015ce5c62e0a46483f698921f7b49bbef149b99feb1689'
+  },
+  {
+    address: '0xEe4722A0AB7867d1B71DbD3eCEb390cB76658bC9',
+    key: '0xf9f4dc827dd9da8e88fcbcaef0ba73a87142a7fb5614b57b60bda80a88f5f027'
+  },
+  {
+    address: '0x3e61ff1014F5737d008b6AD78Fc61611915b3725',
+    key: '0x865ef08b73bae548ad634cdb56c061ebb5b2953aaff29fcf56d3cecee9c6eef3'
+  }
+]
+
 module.exports = {
   DEPOSIT_METHOD,
   START_BYTE_SIZE,
@@ -50624,7 +50647,8 @@ module.exports = {
   BLOCKNUMBER_BYTE_SIZE,
   MIN_COIN_ID,
   MAX_COIN_ID,
-  NULL_ADDRESS
+  NULL_ADDRESS,
+  ACCOUNTS
 }
 
 },{"web3":272}],290:[function(require,module,exports){
@@ -50859,7 +50883,11 @@ class SignedTransaction extends BaseModel {
     const unsigned = new UnsignedTransaction(Object.assign({}, this.args))
     return unsigned.transfers.every((transfer, i) => {
       const sig = this.signatures[i]
-      const sigString = '0x' + sig.r.toString('hex') + sig.s.toString('hex') + sig.v.toString('hex')
+      const sigString =
+        '0x' +
+        sig.r.toString('hex') +
+        sig.s.toString('hex') +
+        sig.v.toString('hex')
       const signer = web3.eth.accounts.recover(unsigned.hash, sigString)
       return signer === transfer.sender
     })
@@ -51126,6 +51154,10 @@ class SchemaBuffer extends BaseSchemaType {
   }
 
   cast (value) {
+    if (value instanceof String || typeof value === 'string') {
+      value = value.startsWith('0x') ? value.slice(2) : value
+    }
+
     return Buffer.from(value, 'hex')
   }
 
@@ -51799,15 +51831,98 @@ class MerkleSumTree {
 module.exports = MerkleSumTree
 
 },{"./merkle-tree-node":313,"web3":272}],316:[function(require,module,exports){
+const BigNum = require('bn.js')
+const Web3 = require('web3')
+const models = require('./serialization').models
+const accounts = require('./constants').ACCOUNTS
+const UnsignedTransaction = models.UnsignedTransaction
+const SignedTransaction = models.SignedTransaction
+const web3 = new Web3()
+
 const int32ToHex = (x) => {
-  x &= 0xFFFFFFFF
+  x &= 0xffffffff
   let hex = x.toString(16).toUpperCase()
   return ('0000000000000000' + hex).slice(-16)
 }
 
-module.exports = {
-  int32ToHex: int32ToHex
+const getRandomElement = (arr) => {
+  return arr[Math.floor(Math.random() * arr.length)]
 }
 
-},{}]},{},[1])
+const getRandomAccount = () => {
+  return getRandomElement(accounts)
+}
+
+const sign = (data, key) => {
+  return web3.eth.accounts.sign(data, key)
+}
+
+/**
+ * Returns a list of `n` sequential transactions.
+ * @param {*} n Number of sequential transactions to return.
+ * @return {*} A list of sequential transactions.
+ */
+const getSequentialTxs = (n) => {
+  let txs = []
+
+  for (let i = 0; i < n; i++) {
+    let sender = getRandomAccount()
+    let recipient = getRandomAccount()
+
+    let unsignedTx = new UnsignedTransaction({
+      block: 0,
+      transfers: [
+        {
+          sender: sender.address,
+          recipient: recipient.address,
+          token: 0,
+          start: i * 10,
+          end: (i + 1) * 10
+        }
+      ]
+    })
+    let signedTx = new SignedTransaction({
+      ...unsignedTx,
+      ...{ signatures: [ sign(unsignedTx.hash, sender.key) ] }
+    })
+    txs.push(signedTx)
+  }
+
+  return txs
+}
+
+/**
+ * Returns a transaction generated from a fuzzed encoding.
+ * @param {*} n Number of sequential transactions to return.
+ * @return {*} A list of sequential transactions.
+ */
+
+function genRandomTX (blockNum, senderAddress, recipientAddress, numTransfers) {
+  let randomTransfers = []
+  for (let i = 0; i < numTransfers; i++) {
+    // fuzz a random encoding to test decoding with
+    let randomVals = ''
+    for (let i = 0; i < 28; i++) {
+      // random start, end, type = 12+12+4 bytes
+      const randHex = Math.floor(Math.random() * 256)
+      randomVals += new BigNum(randHex, 10).toString(16, 2)
+    }
+    randomTransfers +=
+      senderAddress.slice(2) + recipientAddress.slice(2) + randomVals
+    // can't have invalid addresses so ignore this partthe 33rd byte is the numTransfers which isn't random--it's 4
+  }
+  return (
+    new BigNum(blockNum).toString(16, 8) +
+    new BigNum(numTransfers).toString(16, 2) +
+    randomTransfers
+  )
+}
+
+module.exports = {
+  int32ToHex: int32ToHex,
+  getSequentialTxs: getSequentialTxs,
+  genRandomTX: genRandomTX
+}
+
+},{"./constants":289,"./serialization":294,"bn.js":20,"web3":272}]},{},[1])
 //# sourceMappingURL=plasma-utils.js.map

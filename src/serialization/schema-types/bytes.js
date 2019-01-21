@@ -12,7 +12,7 @@ class SchemaBuffer extends BaseSchemaType {
       length: (value) => {
         return {
           validate: (v) => {
-            return (v.length === value)
+            return v.length === value
           },
           message: 'Invalid Buffer length',
           type: 'length'
@@ -21,7 +21,7 @@ class SchemaBuffer extends BaseSchemaType {
       required: (_) => {
         return {
           validate: (v) => {
-            return (v instanceof Buffer)
+            return v instanceof Buffer
           },
           message: 'Value must be a Buffer',
           type: 'required'
@@ -37,6 +37,10 @@ class SchemaBuffer extends BaseSchemaType {
   }
 
   cast (value) {
+    if (value instanceof String || typeof value === 'string') {
+      value = value.startsWith('0x') ? value.slice(2) : value
+    }
+
     return Buffer.from(value, 'hex')
   }
 
