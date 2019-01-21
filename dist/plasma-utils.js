@@ -51537,6 +51537,7 @@ const MerkleSumTree = require('./sum-tree')
 const MerkleTreeNode = require('./merkle-tree-node')
 const models = require('../serialization').models
 const Transaction = models.Transaction
+const UnsignedTransaction = models.UnsignedTransaction
 const Signature = models.Signature
 const TransferProof = models.TransferProof
 const TransactionProof = models.TransactionProof
@@ -51556,11 +51557,13 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     // Pull out the start, end, and encoding of each transaction.
     leaves = leaves
       .reduce((prev, curr) => {
+        const unsigned = new UnsignedTransaction(curr.args)
         let parsedTransfers = curr.transfers.map((transfer) => {
           return {
             start: new BigNum(transfer.decoded.start),
             end: new BigNum(transfer.decoded.end),
-            encoded: '0x' + curr.encoded
+            encoded: '0x' + unsigned.encoded,
+            signedTransaction: curr
           }
         })
         return prev.concat(parsedTransfers)
@@ -51809,12 +51812,14 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       }
     )
     return transferProofs.every((transferProof, transferIndex) => {
-      return this.checkTransferProof(
-        transaction,
-        transferIndex,
-        transferProof,
-        root
-      ) && transaction.checkSigs()
+      return (
+        this.checkTransferProof(
+          transaction,
+          transferIndex,
+          transferProof,
+          root
+        ) && transaction.checkSigs()
+      )
     })
   }
 }
