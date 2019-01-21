@@ -3,7 +3,8 @@ const Transfer = require('./transfer')
 const SignedTransaction = require('./transaction').SignedTransaction
 const UnsignedTransaction = require('./transaction').UnsignedTransaction
 const Transaction = UnsignedTransaction // TODO: Remove this
-const Proof = require('./proof')
+const TransferProof = require('./transfer-proof')
+const TransactionProof = require('./transaction-proof')
 
 module.exports = {
   Signature,
@@ -11,5 +12,6 @@ module.exports = {
   Transaction,
   SignedTransaction,
   UnsignedTransaction,
-  Proof
+  TransferProof,
+  TransactionProof
 }

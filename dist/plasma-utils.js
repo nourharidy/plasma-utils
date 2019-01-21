@@ -51547,7 +51547,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     for (let i = 0; i < this.levels.length - 1; i++) {
       node = this.levels[i][siblingIndex]
       if (node === undefined) {
-        node = PlasmaMerkleSumTree.emptyLeaf().data
+        node = PlasmaMerkleSumTree.emptyLeaf()
       }
 
       branch.push(node.data)
@@ -51570,6 +51570,11 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    * @return {boolean} `true` if the transaction is in the tree, `false` otherwise.
    */
   static checkInclusion (leafIndex, transaction, transferIndex, inclusionProof, root) {
+    const { valid } = PlasmaMerkleSumTree.checkInclusionAndGetBounds(leafIndex, transaction, transferIndex, inclusionProof, root)
+    return valid
+  }
+
+  static checkInclusionAndGetBounds (leafIndex, transaction, transferIndex, inclusionProof, root) {
     if (transaction instanceof String || typeof transaction === 'string') {
       transaction = new Transaction(transaction)
     }
@@ -51609,7 +51614,22 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     const transfer = transaction.transfers[transferIndex].decoded
     const validSum = transfer.start.gte(leftSum) && transfer.end.lte(computedNode.sum.sub(rightSum))
     const validRoot = computedNode.data === root
-    return validSum && validRoot
+
+    return {
+      valid: validRoot && validSum,
+      implicitStart: leftSum,
+      implicitEnd: computedNode.sum.sub(rightSum)
+    }
+  }
+
+  static checkNonInclusion (range, leafIndex, transaction, transferIndex, inclusionProof, root) {
+    const {
+      valid,
+      implicitStart,
+      implicitEnd
+    } = PlasmaMerkleSumTree.checkInclusionAndGetBounds(leafIndex, transaction, transferIndex, inclusionProof, root)
+
+    return valid && range.start.gte(implicitStart) && range.end.lte(implicitEnd)
   }
 }
 
