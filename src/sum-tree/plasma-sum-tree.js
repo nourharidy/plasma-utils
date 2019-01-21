@@ -142,8 +142,8 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
 
     // Each TR proof gets the signature for that transfer's sender
     const signature = new Signature(
-      '1bd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c04224e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
-    ) // this.leaves[leafIndex].signatures[transferIndex]
+      this.leaves[leafIndex].signatures[transferIndex]
+    )
 
     let branch = []
 
@@ -166,19 +166,8 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       parsedSum: parsedSum,
       leafIndex: leafIndex,
       inclusionProof: branch,
-      signature: signature.decoded
+      signature: signature
     })
-  }
-
-  /**
-   * Returns whether a given signature is valid on the hash.
-   * @param {*} transactionHash The hash which was signed.
-   * @param {*} signature The signature.
-   * @return {*} A serializaed TransactionProof object.
-   */
-
-  static checkSignature (transactionHash, signature) {
-    return true
   }
 
   /**
@@ -211,8 +200,8 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
 
     const transactionHash = PlasmaMerkleSumTree.hash('0x' + transaction.encoded)
 
-    const signature = transferProof.args.signature
-    if (!this.checkSignature(transactionHash, signature)) return false
+    // still need to check this
+    // const signature = transferProof.args.signature
 
     let computedNode = new MerkleTreeNode(
       transactionHash,
@@ -251,10 +240,15 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
   getTransactionProof (transaction) {
     let transactionLeafIndices = []
     for (let leafIndex in this.leaves) {
-      if (this.leaves[leafIndex] === transaction) { transactionLeafIndices.push(new BigNum(leafIndex).toNumber()) }
+      if (this.leaves[leafIndex] === transaction) {
+        transactionLeafIndices.push(new BigNum(leafIndex).toNumber())
+      }
     }
     const transferProofs = transactionLeafIndices.map((leafIndex) => {
-      return this.getTransferProof(leafIndex)
+      return this.getTransferProof(
+        leafIndex,
+        transactionLeafIndices.indexOf(leafIndex)
+      ) // this gets the TR index
     })
     return new TransactionProof({
       transferProofs: transferProofs.map((transferProof) => {

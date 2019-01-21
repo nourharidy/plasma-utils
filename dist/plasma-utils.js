@@ -51605,7 +51605,12 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     let branch = []
 
     // User needs to be given this extra information.
-    branch.push(new MerkleTreeNode('0x0000000000000000000000000000000000000000000000000000000000000000', this.levels[0][index].sum).data)
+    branch.push(
+      new MerkleTreeNode(
+        '0x0000000000000000000000000000000000000000000000000000000000000000',
+        this.levels[0][index].sum
+      ).data
+    )
 
     let parentIndex
     let node
@@ -51631,7 +51636,8 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    * @param {Number} index Index of the leaf to return a proof for.
    * @return {*} A serializaed TransferProof object.
    */
-  getTransferProof (leafIndex, transferIndex) { // first arg is the index of the branch requested, second is the transfer that branch was included for
+  getTransferProof (leafIndex, transferIndex) {
+    // first arg is the index of the branch requested, second is the transfer that branch was included for
     if (leafIndex >= this.levels[0].length || leafIndex < 0) {
       throw new Error('Invalid leaf index')
     }
@@ -51640,7 +51646,9 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     const parsedSum = this.levels[0][leafIndex].sum
 
     // Each TR proof gets the signature for that transfer's sender
-    const signature = new Signature('1bd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c04224e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354') // this.leaves[leafIndex].signatures[transferIndex]
+    const signature = new Signature(
+      this.leaves[leafIndex].signatures[transferIndex]
+    )
 
     let branch = []
 
@@ -51663,19 +51671,8 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       parsedSum: parsedSum,
       leafIndex: leafIndex,
       inclusionProof: branch,
-      signature: signature.decoded
+      signature: signature
     })
-  }
-
-  /**
-   * Returns whether a given signature is valid on the hash.
-   * @param {*} transactionHash The hash which was signed.
-   * @param {*} signature The signature.
-   * @return {*} A serializaed TransactionProof object.
-   */
-
-  static checkSignature (transactionHash, signature) {
-    return true
   }
 
   /**
@@ -51701,12 +51698,15 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     // Covert the index into a bitstring
     let path = new BigNum(leafIndex).toString(2, inclusionProof.length)
     // Reverse the order of the bitstring to start at the bottom of the tree
-    path = path.split('').reverse().join('')
+    path = path
+      .split('')
+      .reverse()
+      .join('')
 
     const transactionHash = PlasmaMerkleSumTree.hash('0x' + transaction.encoded)
 
-    const signature = transferProof.args.signature
-    if (!this.checkSignature(transactionHash, signature)) return false
+    // still need to check this
+    // const signature = transferProof.args.signature
 
     let computedNode = new MerkleTreeNode(
       transactionHash,
@@ -51730,7 +51730,8 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     }
     const rootSum = computedNode.sum
     const transfer = transaction.transfers[transferIndex].decoded
-    const validSum = transfer.start.gte(leftSum) && transfer.end.lte(rootSum.sub(rightSum))
+    const validSum =
+      transfer.start.gte(leftSum) && transfer.end.lte(rootSum.sub(rightSum))
     const validRoot = computedNode.data === root
     return validSum && validRoot
   }
@@ -51744,13 +51745,20 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
   getTransactionProof (transaction) {
     let transactionLeafIndices = []
     for (let leafIndex in this.leaves) {
-      if (this.leaves[leafIndex] === transaction) transactionLeafIndices.push(new BigNum(leafIndex).toNumber())
+      if (this.leaves[leafIndex] === transaction) {
+        transactionLeafIndices.push(new BigNum(leafIndex).toNumber())
+      }
     }
     const transferProofs = transactionLeafIndices.map((leafIndex) => {
-      return this.getTransferProof(leafIndex)
+      return this.getTransferProof(
+        leafIndex,
+        transactionLeafIndices.indexOf(leafIndex)
+      ) // this gets the TR index
     })
     return new TransactionProof({
-      transferProofs: transferProofs.map((transferProof) => { return transferProof.decoded })
+      transferProofs: transferProofs.map((transferProof) => {
+        return transferProof.decoded
+      })
     })
   }
 
@@ -51763,9 +51771,18 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    */
 
   static checkTransactionProof (transaction, transactionProof, root) {
-    const transferProofs = transactionProof.args.transferProofs.map((transferProof) => { return { args: transferProof } })
+    const transferProofs = transactionProof.args.transferProofs.map(
+      (transferProof) => {
+        return { args: transferProof }
+      }
+    )
     return transferProofs.every((transferProof, transferIndex) => {
-      return this.checkTransferProof(transaction, transferIndex, transferProof, root)
+      return this.checkTransferProof(
+        transaction,
+        transferIndex,
+        transferProof,
+        root
+      )
     })
   }
 }
@@ -51833,7 +51850,7 @@ module.exports = MerkleSumTree
 
 },{"./merkle-tree-node":313,"web3":275}],316:[function(require,module,exports){
 const BigNum = require('bn.js')
-const Transaction = require('./serialization').models.Transaction
+const SignedTransaction = require('./serialization').models.SignedTransaction
 
 const int32ToHex = (x) => {
   x &= 0xffffffff
@@ -51850,7 +51867,7 @@ const getSequentialTxs = (n) => {
   let txs = []
 
   for (let i = 0; i < n; i++) {
-    txs[i] = new Transaction({
+    txs[i] = new SignedTransaction({
       transfers: [
         {
           sender: '0x000000000000000f000000000000000000000000', // random fs here because contract crashes on decoding bytes20 of all zeros to address

@@ -1,5 +1,5 @@
 const BigNum = require('bn.js')
-const Transaction = require('./serialization').models.Transaction
+const SignedTransaction = require('./serialization').models.SignedTransaction
 
 const int32ToHex = (x) => {
   x &= 0xffffffff
@@ -16,7 +16,7 @@ const getSequentialTxs = (n) => {
   let txs = []
 
   for (let i = 0; i < n; i++) {
-    txs[i] = new Transaction({
+    txs[i] = new SignedTransaction({
       transfers: [
         {
           sender: '0x000000000000000f000000000000000000000000', // random fs here because contract crashes on decoding bytes20 of all zeros to address
