@@ -28,8 +28,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
           return {
             start: new BigNum(transfer.decoded.start),
             end: new BigNum(transfer.decoded.end),
-            encoded: '0x' + unsigned.encoded,
-            signedTransaction: curr
+            encoded: '0x' + unsigned.encoded
           }
         })
         return prev.concat(parsedTransfers)
