@@ -1,7 +1,6 @@
 const Web3 = require('web3')
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
-const Transfer = require('./transfer')
 
 const web3 = new Web3()
 
@@ -11,9 +10,6 @@ const web3 = new Web3()
 class UnsignedTransaction extends BaseModel {
   constructor (args) {
     super(args, schemas.UnsignedTransactionSchema)
-    this.transfers = this.args.transfers.map((transfer) => {
-      return new Transfer(transfer)
-    })
   }
 }
 
@@ -23,9 +19,6 @@ class UnsignedTransaction extends BaseModel {
 class SignedTransaction extends BaseModel {
   constructor (args) {
     super(args, schemas.SignedTransactionSchema)
-    this.transfers = this.args.transfers.map((transfer) => {
-      return new Transfer(transfer)
-    })
   }
 
   /**
@@ -33,7 +26,7 @@ class SignedTransaction extends BaseModel {
    * @return {boolean} `true` if the transaction is correctly signed, `false` otherwise.
    */
   checkSigs () {
-    const unsigned = new UnsignedTransaction(Object.assign({}, this.args))
+    const unsigned = new UnsignedTransaction(this)
     return unsigned.transfers.every((transfer, i) => {
       const sig = this.signatures[i]
       const sigString =

@@ -43,15 +43,16 @@ class Schema {
    * @return {*} The modified object.
    */
   cast (object) {
+    let ret = {}
     for (let key in this.fields) {
       let field = this.fields[key]
       if (field.isArray) {
-        object[key] = object[key].map(field.cast.bind(field))
+        ret[key] = object[key].map(field.cast.bind(field))
       } else {
-        object[key] = field.cast(object[key])
+        ret[key] = field.cast(object[key])
       }
     }
-    return object
+    return ret
   }
 
   /**

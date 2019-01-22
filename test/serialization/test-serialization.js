@@ -23,9 +23,9 @@ const decodedTransfer = {
 
 const encodedSignature = '1bd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c04224e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
 const decodedSignature = {
-  v: '1b',
-  r: 'd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c042',
-  s: '24e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
+  v: Buffer.from('1b', 'hex'),
+  r: Buffer.from('d693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c042', 'hex'),
+  s: Buffer.from('24e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354', 'hex')
 }
 
 const encodedUnsignedTransaction = '00000001' + '01' + encodedTransfer
@@ -52,7 +52,7 @@ const decodedTransferProof = {
   parsedSum: new BigNum('3', 'hex'),
   leafIndex: new BigNum('4', 'hex'),
   inclusionProof: [
-    '563f225cdc192264a90e7e4b402815479c71a16f1593afa4fc6323e18583472affffffffffffffffffffffffffffffff'
+    Buffer.from('563f225cdc192264a90e7e4b402815479c71a16f1593afa4fc6323e18583472affffffffffffffffffffffffffffffff', 'hex')
   ],
   signature: decodedSignature
 }
@@ -137,6 +137,21 @@ describe('Serialization', () => {
       const tx = new UnsignedTransaction(encodedUnsignedTransaction)
 
       tx.decoded.should.deep.equal(decodedUnsignedTransaction)
+    })
+
+    it('should be correctly copied', () => {
+      const tx1 = new UnsignedTransaction(encodedUnsignedTransaction)
+      const tx2 = new UnsignedTransaction(tx1)
+
+      tx2.decoded.should.deep.equal(tx1.decoded)
+    })
+
+    it('should be correctly modified', () => {
+      let tx = new UnsignedTransaction(encodedUnsignedTransaction)
+      tx.block = new BigNum(2)
+      const expected = '00000002' + '01' + encodedTransfer
+
+      tx.encoded.should.deep.equal(expected)
     })
   })
 

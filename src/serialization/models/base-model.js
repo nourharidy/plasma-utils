@@ -7,39 +7,36 @@ const Web3 = require('web3')
 class BaseModel {
   constructor (args, schema) {
     this.schema = schema
-
-    if (args instanceof String || typeof args === 'string') {
-      args = this.schema.decode(args)
-    }
-    if (Buffer.isBuffer(args)) {
-      args = this.schema.decode(args.toString('hex'))
-    }
-
-    this.args = this.schema.cast(args)
-    this.schema.validate(args)
-
-    // Remove any reserved properties.
-    const illegal = ['schema']
-    for (let prop of Object.getOwnPropertyNames(BaseModel.prototype).concat(
-      illegal
-    )) {
-      if (prop in args) {
-        delete args[prop]
-      }
-    }
-    Object.assign(this, this.args)
+    this._parseArgs(args)
   }
 
   get encoded () {
-    return this.schema.encode(this.args)
+    return this.schema.encode(this)
   }
 
   get decoded () {
-    return this.args
+    return this.schema.cast(this)
   }
 
   get hash () {
     return Web3.utils.sha3('0x' + this.encoded)
+  }
+
+  _parseArgs (args) {
+    if (Buffer.isBuffer(args)) {
+      args = this.schema.decode(args.toString('hex'))
+    }
+    if (args instanceof String || typeof args === 'string') {
+      args = this.schema.decode(args)
+    }
+    if (typeof args === 'object' && args !== null) {
+      args = Object.assign({}, args)
+    }
+
+    args = this.schema.cast(args)
+    this.schema.validate(args)
+
+    Object.assign(this, args)
   }
 }
 

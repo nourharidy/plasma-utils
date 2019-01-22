@@ -26,8 +26,8 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
         const unsigned = new UnsignedTransaction(curr)
         let parsedTransfers = curr.transfers.map((transfer) => {
           return {
-            start: new BigNum(transfer.decoded.start),
-            end: new BigNum(transfer.decoded.end),
+            start: new BigNum(transfer.start),
+            end: new BigNum(transfer.end),
             encoded: '0x' + unsigned.encoded
           }
         })
@@ -114,7 +114,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     for (let i = 0; i < this.levels.length - 1; i++) {
       node = this.levels[i][siblingIndex]
       if (node === undefined) {
-        node = PlasmaMerkleSumTree.emptyLeaf().data
+        node = PlasmaMerkleSumTree.emptyLeaf()
       }
 
       inclusionProof.push(node.data)
@@ -147,7 +147,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       implicitEnd
     } = PlasmaMerkleSumTree.calculateRootAndBounds(transaction, transferProof)
 
-    const transfer = transaction.transfers[transferIndex].decoded
+    const transfer = transaction.transfers[transferIndex]
     const validSum =
       transfer.start.gte(implicitStart) && transfer.end.lte(implicitEnd)
     const validRoot = computedRoot === root
@@ -237,9 +237,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       ) // this gets the TR index
     })
     return new TransactionProof({
-      transferProofs: transferProofs.map((transferProof) => {
-        return transferProof.decoded
-      })
+      transferProofs: transferProofs
     })
   }
 

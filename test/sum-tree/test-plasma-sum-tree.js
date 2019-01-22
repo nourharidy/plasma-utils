@@ -3,7 +3,7 @@ const BigNum = require('bn.js')
 
 const PlasmaMerkleSumTree = require('../../src/sum-tree/plasma-sum-tree')
 const models = require('../../src/serialization').models
-const Transaction = models.Transaction
+const UnsignedTransaction = models.UnsignedTransaction
 const utils = require('../../src/utils')
 
 const should = chai.should()
@@ -14,7 +14,7 @@ const accounts = [
   '0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8'
 ]
 
-const tx1 = new Transaction({
+const tx1 = new UnsignedTransaction({
   block: 0,
   transfers: [
     {
@@ -26,7 +26,7 @@ const tx1 = new Transaction({
     }
   ]
 })
-const tx2 = new Transaction({
+const tx2 = new UnsignedTransaction({
   block: 0,
   transfers: [
     {
@@ -38,7 +38,7 @@ const tx2 = new Transaction({
     }
   ]
 })
-const tx3 = new Transaction({
+const tx3 = new UnsignedTransaction({
   block: 0,
   transfers: [
     {
@@ -84,6 +84,7 @@ describe('PlasmaMerkleSumTree', () => {
     const index = Math.floor(Math.random() * numDummyTransactions)
     const tx = tree.leaves[index]
 
+    // TODO: Have this run with specific indices, not random.
     it('should verify a random TransferProof', () => {
       const TRIndex = 0
 

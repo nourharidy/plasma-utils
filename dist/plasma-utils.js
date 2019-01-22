@@ -50758,37 +50758,36 @@ const Web3 = require('web3')
 class BaseModel {
   constructor (args, schema) {
     this.schema = schema
-
-    if (args instanceof String || typeof args === 'string') {
-      args = this.schema.decode(args)
-    }
-    if (Buffer.isBuffer(args)) {
-      args = this.schema.decode(args.toString('hex'))
-    }
-
-    this.args = this.schema.cast(args)
-    this.schema.validate(args)
-
-    // Remove any reserved properties.
-    const illegal = ['schema']
-    for (let prop of Object.getOwnPropertyNames(BaseModel.prototype).concat(illegal)) {
-      if (prop in args) {
-        delete args[prop]
-      }
-    }
-    Object.assign(this, this.args)
+    this._parseArgs(args)
   }
 
   get encoded () {
-    return this.schema.encode(this.args)
+    return this.schema.encode(this)
   }
 
   get decoded () {
-    return this.args
+    return this.schema.cast(this)
   }
 
   get hash () {
     return Web3.utils.sha3('0x' + this.encoded)
+  }
+
+  _parseArgs (args) {
+    if (Buffer.isBuffer(args)) {
+      args = this.schema.decode(args.toString('hex'))
+    }
+    if (args instanceof String || typeof args === 'string') {
+      args = this.schema.decode(args)
+    }
+    if (typeof args === 'object' && args !== null) {
+      args = Object.assign({}, args)
+    }
+
+    args = this.schema.cast(args)
+    this.schema.validate(args)
+
+    Object.assign(this, args)
   }
 }
 
@@ -50801,14 +50800,12 @@ const Signature = require('./signature')
 const Transfer = require('./transfer')
 const SignedTransaction = require('./transaction').SignedTransaction
 const UnsignedTransaction = require('./transaction').UnsignedTransaction
-const Transaction = UnsignedTransaction // TODO: Remove this
 const TransferProof = require('./transfer-proof')
 const TransactionProof = require('./transaction-proof')
 
 module.exports = {
   Signature,
   Transfer,
-  Transaction,
   SignedTransaction,
   UnsignedTransaction,
   TransferProof,
@@ -50849,7 +50846,6 @@ module.exports = TransactionProof
 const Web3 = require('web3')
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
-const Transfer = require('./transfer')
 
 const web3 = new Web3()
 
@@ -50859,9 +50855,6 @@ const web3 = new Web3()
 class UnsignedTransaction extends BaseModel {
   constructor (args) {
     super(args, schemas.UnsignedTransactionSchema)
-    this.transfers = this.args.transfers.map((transfer) => {
-      return new Transfer(transfer)
-    })
   }
 }
 
@@ -50871,9 +50864,6 @@ class UnsignedTransaction extends BaseModel {
 class SignedTransaction extends BaseModel {
   constructor (args) {
     super(args, schemas.SignedTransactionSchema)
-    this.transfers = this.args.transfers.map((transfer) => {
-      return new Transfer(transfer)
-    })
   }
 
   /**
@@ -50881,7 +50871,7 @@ class SignedTransaction extends BaseModel {
    * @return {boolean} `true` if the transaction is correctly signed, `false` otherwise.
    */
   checkSigs () {
-    const unsigned = new UnsignedTransaction(Object.assign({}, this.args))
+    const unsigned = new UnsignedTransaction(this)
     return unsigned.transfers.every((transfer, i) => {
       const sig = this.signatures[i]
       const sigString =
@@ -50900,7 +50890,7 @@ module.exports = {
   SignedTransaction
 }
 
-},{"../schemas":307,"./base-model":295,"./transfer":301,"web3":272}],300:[function(require,module,exports){
+},{"../schemas":307,"./base-model":295,"web3":272}],300:[function(require,module,exports){
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
 
@@ -51278,15 +51268,16 @@ class Schema {
    * @return {*} The modified object.
    */
   cast (object) {
+    let ret = {}
     for (let key in this.fields) {
       let field = this.fields[key]
       if (field.isArray) {
-        object[key] = object[key].map(field.cast.bind(field))
+        ret[key] = object[key].map(field.cast.bind(field))
       } else {
-        object[key] = field.cast(object[key])
+        ret[key] = field.cast(object[key])
       }
     }
-    return object
+    return ret
   }
 
   /**
@@ -51563,8 +51554,8 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
         const unsigned = new UnsignedTransaction(curr)
         let parsedTransfers = curr.transfers.map((transfer) => {
           return {
-            start: new BigNum(transfer.decoded.start),
-            end: new BigNum(transfer.decoded.end),
+            start: new BigNum(transfer.start),
+            end: new BigNum(transfer.end),
             encoded: '0x' + unsigned.encoded
           }
         })
@@ -51651,7 +51642,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     for (let i = 0; i < this.levels.length - 1; i++) {
       node = this.levels[i][siblingIndex]
       if (node === undefined) {
-        node = PlasmaMerkleSumTree.emptyLeaf().data
+        node = PlasmaMerkleSumTree.emptyLeaf()
       }
 
       inclusionProof.push(node.data)
@@ -51684,8 +51675,9 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       implicitEnd
     } = PlasmaMerkleSumTree.calculateRootAndBounds(transaction, transferProof)
 
-    const transfer = transaction.transfers[transferIndex].decoded
-    const validSum = transfer.start.gte(implicitStart) && transfer.end.lte(implicitEnd)
+    const transfer = transaction.transfers[transferIndex]
+    const validSum =
+      transfer.start.gte(implicitStart) && transfer.end.lte(implicitEnd)
     const validRoot = computedRoot === root
     return validSum && validRoot
   }
@@ -51746,7 +51738,10 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     return {
       computedRoot: computedNode.data,
       implicitStart: new BigNum(leftSum.toString('hex'), 'hex'),
-      implicitEnd: new BigNum(computedNode.sum.sub(rightSum).toString('hex'), 'hex')
+      implicitEnd: new BigNum(
+        computedNode.sum.sub(rightSum).toString('hex'),
+        'hex'
+      )
     }
   }
 
@@ -51770,9 +51765,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       ) // this gets the TR index
     })
     return new TransactionProof({
-      transferProofs: transferProofs.map((transferProof) => {
-        return transferProof.decoded
-      })
+      transferProofs: transferProofs
     })
   }
 
@@ -51785,18 +51778,16 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    */
 
   static checkTransactionProof (transaction, transactionProof, root) {
-    return transactionProof.transferProofs.every(
-      (transferProof, transferIndex) => {
-        return (
-          this.checkTransferProof(
-            transaction,
-            transferIndex,
-            transferProof,
-            root
-          )
+    return (
+      transactionProof.transferProofs.every((transferProof, transferIndex) => {
+        return this.checkTransferProof(
+          transaction,
+          transferIndex,
+          transferProof,
+          root
         )
-      }
-    ) && transaction.checkSigs()
+      }) && transaction.checkSigs()
+    )
   }
 }
 
