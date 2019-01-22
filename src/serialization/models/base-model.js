@@ -19,7 +19,10 @@ class BaseModel {
     this.schema.validate(args)
 
     // Remove any reserved properties.
-    for (let prop of Object.getOwnPropertyNames(BaseModel.prototype)) {
+    const illegal = ['schema']
+    for (let prop of Object.getOwnPropertyNames(BaseModel.prototype).concat(
+      illegal
+    )) {
       if (prop in args) {
         delete args[prop]
       }

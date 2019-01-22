@@ -106,14 +106,14 @@ describe('PlasmaMerkleSumTree', () => {
     it('shoudld getTransferProofBounds', () => {
       const TRIndex = 0
 
-      const transferProof = tree.getTransferProof(index, TRIndex)
-      transferProof.leafIndex += 1
+      const firstTx = tree.leaves[0]
+      const transferProof = tree.getTransferProof(0, TRIndex)
 
-      const proofBounds = PlasmaMerkleSumTree.getTransferProofBounds(tx, transferProof)
+      const proofBounds = PlasmaMerkleSumTree.getTransferProofBounds(firstTx, transferProof)
 
       const expected = {
-        implicitStart: new BigNum(0),
-        implicitEnd: new BigNum(10)
+        implicitStart: new BigNum('0', 'hex'),
+        implicitEnd: new BigNum('a', 'hex')
       }
       proofBounds.should.deep.equal(expected)
     })

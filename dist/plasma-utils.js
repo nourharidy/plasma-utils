@@ -50770,7 +50770,8 @@ class BaseModel {
     this.schema.validate(args)
 
     // Remove any reserved properties.
-    for (let prop of Object.getOwnPropertyNames(BaseModel.prototype)) {
+    const illegal = ['schema']
+    for (let prop of Object.getOwnPropertyNames(BaseModel.prototype).concat(illegal)) {
       if (prop in args) {
         delete args[prop]
       }
@@ -51533,6 +51534,7 @@ class MerkleTreeNode {
 module.exports = MerkleTreeNode
 
 },{"web3":272}],314:[function(require,module,exports){
+(function (Buffer){
 const BigNum = require('bn.js')
 
 const MerkleSumTree = require('./sum-tree')
@@ -51558,7 +51560,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     // Pull out the start, end, and encoding of each transaction.
     leaves = leaves
       .reduce((prev, curr) => {
-        const unsigned = new UnsignedTransaction(curr.encoded)
+        const unsigned = new UnsignedTransaction(curr)
         let parsedTransfers = curr.transfers.map((transfer) => {
           return {
             start: new BigNum(transfer.decoded.start),
@@ -51569,7 +51571,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
         return prev.concat(parsedTransfers)
       }, [])
       .sort((a, b) => {
-        return a.start - b.start
+        return a.start.sub(b.start)
       })
 
     let parsed = []
@@ -51642,8 +51644,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       this.leaves[leafIndex].signatures[transferIndex]
     )
 
-    let branch = []
-
+    let inclusionProof = []
     let parentIndex
     let node
     let siblingIndex = leafIndex + (leafIndex % 2 === 0 ? 1 : -1)
@@ -51653,16 +51654,17 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
         node = PlasmaMerkleSumTree.emptyLeaf().data
       }
 
-      branch.push(node.data)
+      inclusionProof.push(node.data)
 
       // Figure out the parent and then figure out the parent's sibling.
       parentIndex = siblingIndex === 0 ? 0 : Math.floor(siblingIndex / 2)
       siblingIndex = parentIndex + (parentIndex % 2 === 0 ? 1 : -1)
     }
+
     return new TransferProof({
       parsedSum: parsedSum,
       leafIndex: leafIndex,
-      inclusionProof: branch,
+      inclusionProof: inclusionProof,
       signature: signature
     })
   }
@@ -51675,53 +51677,32 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    * @param {*} root The root node of the tree to check.
    * @return {boolean} `true` if the transfer is in the tree, `false` otherwise.
    */
-
   static checkTransferProof (transaction, transferIndex, transferProof, root) {
-    transaction = new UnsignedTransaction(transaction)
-    transferProof = new TransferProof(transferProof)
+    const {
+      computedRoot,
+      implicitStart,
+      implicitEnd
+    } = PlasmaMerkleSumTree.calculateRootAndBounds(transaction, transferProof)
 
-    const leafIndex = transferProof.leafIndex
-    const inclusionProof = transferProof.inclusionProof
-
-    // Covert the index into a bitstring
-    let path = new BigNum(leafIndex).toString(2, inclusionProof.length)
-    // Reverse the order of the bitstring to start at the bottom of the tree
-    path = path
-      .split('')
-      .reverse()
-      .join('')
-
-    const transactionHash = PlasmaMerkleSumTree.hash('0x' + transaction.encoded)
-
-    let computedNode = new MerkleTreeNode(
-      transactionHash,
-      transferProof.parsedSum
-    )
-    let leftSum = new BigNum(0)
-    let rightSum = new BigNum(0)
-    for (let i = 0; i < inclusionProof.length; i++) {
-      const encodedSibling = inclusionProof[i]
-      const sibling = new MerkleTreeNode(
-        new BigNum(encodedSibling.slice(0, 32)).toString(16, 64),
-        new BigNum(encodedSibling.slice(32, 48))
-      )
-      if (path[i] === '0') {
-        computedNode = PlasmaMerkleSumTree.parent(computedNode, sibling)
-        rightSum.add(sibling.sum)
-      } else {
-        computedNode = PlasmaMerkleSumTree.parent(sibling, computedNode)
-        leftSum.add(sibling.sum)
-      }
-    }
-    const rootSum = computedNode.sum
     const transfer = transaction.transfers[transferIndex].decoded
-    const validSum =
-      transfer.start.gte(leftSum) && transfer.end.lte(rootSum.sub(rightSum))
-    const validRoot = computedNode.data === root
-    return validSum && validRoot // && validSignature
+    const validSum = transfer.start.gte(implicitStart) && transfer.end.lte(implicitEnd)
+    const validRoot = computedRoot === root
+    return validSum && validRoot
   }
 
   static getTransferProofBounds (transaction, transferProof) {
+    const {
+      implicitStart,
+      implicitEnd
+    } = PlasmaMerkleSumTree.calculateRootAndBounds(transaction, transferProof)
+
+    return {
+      implicitStart,
+      implicitEnd
+    }
+  }
+
+  static calculateRootAndBounds (transaction, transferProof) {
     transaction = new UnsignedTransaction(transaction)
     transferProof = new TransferProof(transferProof)
 
@@ -51745,21 +51726,27 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     let leftSum = new BigNum(0)
     let rightSum = new BigNum(0)
     for (let i = 0; i < inclusionProof.length; i++) {
-      const encodedSibling = inclusionProof[i]
+      let encodedSibling = inclusionProof[i]
+      if (Buffer.isBuffer(encodedSibling)) {
+        encodedSibling = encodedSibling.toString('hex')
+      }
       const sibling = new MerkleTreeNode(
-        new BigNum(encodedSibling.slice(0, 32)).toString(16, 64),
-        new BigNum(encodedSibling.slice(32, 48))
+        encodedSibling.slice(0, 64),
+        new BigNum(encodedSibling.slice(-32), 'hex')
       )
       if (path[i] === '0') {
-        rightSum.add(sibling.sum)
+        computedNode = PlasmaMerkleSumTree.parent(computedNode, sibling)
+        rightSum = rightSum.add(sibling.sum)
       } else {
-        leftSum.add(sibling.sum)
+        computedNode = PlasmaMerkleSumTree.parent(sibling, computedNode)
+        leftSum = leftSum.add(sibling.sum)
       }
     }
-    const rootSum = computedNode.sum
+
     return {
-      implicitStart: leftSum,
-      implicitEnd: rootSum.sub(rightSum)
+      computedRoot: computedNode.data,
+      implicitStart: new BigNum(leftSum.toString('hex'), 'hex'),
+      implicitEnd: new BigNum(computedNode.sum.sub(rightSum).toString('hex'), 'hex')
     }
   }
 
@@ -51806,16 +51793,18 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
             transferIndex,
             transferProof,
             root
-          ) && transaction.checkSigs()
+          )
         )
       }
-    )
+    ) && transaction.checkSigs()
   }
 }
 
 module.exports = PlasmaMerkleSumTree
 
-},{"../constants":289,"../serialization":294,"./merkle-tree-node":313,"./sum-tree":315,"bn.js":20}],315:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../node_modules/is-buffer/index.js")})
+
+},{"../../node_modules/is-buffer/index.js":136,"../constants":289,"../serialization":294,"./merkle-tree-node":313,"./sum-tree":315,"bn.js":20}],315:[function(require,module,exports){
 const web3 = require('web3')
 const MerkleTreeNode = require('./merkle-tree-node')
 
