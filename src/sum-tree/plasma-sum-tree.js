@@ -1,4 +1,5 @@
 const BigNum = require('bn.js')
+const Web3 = require('web3')
 
 const MerkleSumTree = require('./sum-tree')
 const MerkleTreeNode = require('./merkle-tree-node')
@@ -8,6 +9,9 @@ const Signature = models.Signature
 const TransferProof = models.TransferProof
 const TransactionProof = models.TransactionProof
 const constants = require('../constants')
+const utils = require('../utils')
+
+const web3 = new Web3()
 
 /**
  * Class that represents the special type of Merkle sum tree we use.
@@ -91,7 +95,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
   /**
    * Returns an inclusion proof for the leaf at a given index.
    * @param {Number} index Index of the leaf to return a proof for.
-   * @return {*} A serializaed TransferProof object.
+   * @return {TransferProof} A serialized TransferProof object.
    */
   getTransferProof (leafIndex, transferIndex) {
     // first arg is the index of the branch requested, second is the transfer that branch was included for
@@ -136,11 +140,15 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    * Checks whether a given transaction was included in the right branch for a particula transfer.
    * @param {Transaction} transaction A Transaction object.
    * @param {Number} transferIndex Which transfer to check.
-   * @param {*} transferProof A TransferProof object.
-   * @param {*} root The root node of the tree to check.
+   * @param {TransferProof} transferProof A TransferProof object.
+   * @param {string} root The root node of the tree to check.
    * @return {boolean} `true` if the transfer is in the tree, `false` otherwise.
    */
   static checkTransferProof (transaction, transferIndex, transferProof, root) {
+    // Make sure the transaction is unsigned.
+    transaction = new UnsignedTransaction(transaction)
+
+    // Compute the root and bounds.
     const {
       computedRoot,
       implicitStart,
@@ -148,10 +156,18 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     } = PlasmaMerkleSumTree.calculateRootAndBounds(transaction, transferProof)
 
     const transfer = transaction.transfers[transferIndex]
+
+    // Check validity conditions.
     const validSum =
       transfer.start.gte(implicitStart) && transfer.end.lte(implicitEnd)
     const validRoot = computedRoot === root
-    return validSum && validRoot
+    const validSig =
+      web3.eth.accounts.recover(
+        transaction.hash,
+        utils.signatureToString(transferProof.signature)
+      ) === transfer.sender
+
+    return validSum && validRoot && validSig
   }
 
   static getTransferProofBounds (transaction, transferProof) {
@@ -222,7 +238,6 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
    * @param {*} Transaction A transaction element in the sum tree's leaves.
    * @return {*} A serializaed TransactionProof object.
    */
-
   getTransactionProof (transaction) {
     let transactionLeafIndices = []
     for (let leafIndex in this.leaves) {
@@ -243,22 +258,21 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
 
   /**
    * Checks whether a given transaction was included in the right branch for a particula transfer.
-   * @param {Transaction} transaction A Transaction object.
+   * @param {UnsignedTransaction} transaction An UnsignedTransaction object.
    * @param {*} transactionProof A TransactionProof object.
    * @param {*} root The root node of the tree to check.
    * @return {boolean} `true` if the transaction is in the tree, `false` otherwise.
    */
-
   static checkTransactionProof (transaction, transactionProof, root) {
-    return (
-      transactionProof.transferProofs.every((transferProof, transferIndex) => {
+    return transactionProof.transferProofs.every(
+      (transferProof, transferIndex) => {
         return this.checkTransferProof(
           transaction,
           transferIndex,
           transferProof,
           root
         )
-      }) && transaction.checkSigs()
+      }
     )
   }
 }

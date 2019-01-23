@@ -24,6 +24,18 @@ const sign = (data, key) => {
   return web3.eth.accounts.sign(data, key)
 }
 
+const signatureToString = (signature) => {
+  if (signature instanceof String || typeof signature === 'string') {
+    return signature
+  }
+  return (
+    '0x' +
+    signature.r.toString('hex') +
+    signature.s.toString('hex') +
+    signature.v.toString('hex')
+  )
+}
+
 /**
  * Returns a list of `n` sequential transactions.
  * @param {*} n Number of sequential transactions to return.
@@ -86,7 +98,8 @@ function genRandomTX (blockNum, senderAddress, recipientAddress, numTransfers) {
 }
 
 module.exports = {
-  int32ToHex: int32ToHex,
-  getSequentialTxs: getSequentialTxs,
-  genRandomTX: genRandomTX
+  int32ToHex,
+  getSequentialTxs,
+  genRandomTX,
+  signatureToString
 }
