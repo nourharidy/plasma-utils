@@ -1,6 +1,7 @@
 const BigNum = require('bn.js')
 const Web3 = require('web3')
 const models = require('./serialization').models
+const Signature = models.Signature
 const accounts = require('./constants').ACCOUNTS
 const UnsignedTransaction = models.UnsignedTransaction
 const SignedTransaction = models.SignedTransaction
@@ -24,8 +25,22 @@ const sign = (data, key) => {
   return web3.eth.accounts.sign(data, key)
 }
 
+/**
+ * Checks if something is a string
+ * @param {*} str Thing that might be a string.
+ * @return {boolean} `true` if the thing is a string, `false` otherwise.
+ */
+const isString = (str) => {
+  return str instanceof String || typeof str === 'string'
+}
+
+/**
+ * Converts a signature object into a string.
+ * @param {Object} signature A signature object with v,r,s buffers.
+ * @return {string} Signature as a hex string.
+ */
 const signatureToString = (signature) => {
-  if (signature instanceof String || typeof signature === 'string') {
+  if (isString(signature)) {
     return signature
   }
   return (
@@ -34,6 +49,22 @@ const signatureToString = (signature) => {
     signature.s.toString('hex') +
     signature.v.toString('hex')
   )
+}
+
+/**
+ * Converts a string into a signature object.
+ * @param {string} signature A signature string.
+ * @return {Object} A signature object with v,r,s.
+ */
+const stringToSignature = (signature) => {
+  if (!isString(signature)) {
+    return signature
+  }
+  return new Signature({
+    r: Buffer.from(signature.slice(0, 64), 'hex'),
+    s: Buffer.from(signature.slice(64, 128), 'hex'),
+    v: Buffer.from(signature.slice(128, 132), 'hex')
+  })
 }
 
 /**
@@ -101,5 +132,7 @@ module.exports = {
   int32ToHex,
   getSequentialTxs,
   genRandomTX,
-  signatureToString
+  isString,
+  signatureToString,
+  stringToSignature
 }

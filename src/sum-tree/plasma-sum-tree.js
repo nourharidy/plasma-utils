@@ -170,6 +170,12 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     return validSum && validRoot && validSig
   }
 
+  /**
+   * Returns the implicit bounds of a transfer proof.
+   * @param {UnsignedTransaction} transaction Transaction to check.
+   * @param {TransferProof} transferProof A TransferProof for that transaction.
+   * @return {Number, Number} The implicit start and implicit end.
+   */
   static getTransferProofBounds (transaction, transferProof) {
     const {
       implicitStart,
@@ -182,6 +188,12 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     }
   }
 
+  /**
+   * Calculates the root and bounds for a given transfer proof.
+   * @param {UnsignedTransaction} transaction Transaction to check.
+   * @param {TransferProof} transferProof A TransferProof for that transaction.
+   * @return {Number, Number, string} The implicit start, implicit end, and root.
+   */
   static calculateRootAndBounds (transaction, transferProof) {
     transaction = new UnsignedTransaction(transaction)
     transferProof = new TransferProof(transferProof)
@@ -259,8 +271,8 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
   /**
    * Checks whether a given transaction was included in the right branch for a particula transfer.
    * @param {UnsignedTransaction} transaction An UnsignedTransaction object.
-   * @param {*} transactionProof A TransactionProof object.
-   * @param {*} root The root node of the tree to check.
+   * @param {TransactionProof} transactionProof A TransactionProof object.
+   * @param {string} root The root node of the tree to check.
    * @return {boolean} `true` if the transaction is in the tree, `false` otherwise.
    */
   static checkTransactionProof (transaction, transactionProof, root) {

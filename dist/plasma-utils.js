@@ -51689,11 +51689,21 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     const validSum =
       transfer.start.gte(implicitStart) && transfer.end.lte(implicitEnd)
     const validRoot = computedRoot === root
-    const validSig = web3.eth.accounts.recover(transaction.hash, utils.signatureToString(transferProof.signature)) === transfer.sender
+    const validSig =
+      web3.eth.accounts.recover(
+        transaction.hash,
+        utils.signatureToString(transferProof.signature)
+      ) === transfer.sender
 
     return validSum && validRoot && validSig
   }
 
+  /**
+   * Returns the implicit bounds of a transfer proof.
+   * @param {UnsignedTransaction} transaction Transaction to check.
+   * @param {TransferProof} transferProof A TransferProof for that transaction.
+   * @return {Number, Number} The implicit start and implicit end.
+   */
   static getTransferProofBounds (transaction, transferProof) {
     const {
       implicitStart,
@@ -51706,6 +51716,12 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     }
   }
 
+  /**
+   * Calculates the root and bounds for a given transfer proof.
+   * @param {UnsignedTransaction} transaction Transaction to check.
+   * @param {TransferProof} transferProof A TransferProof for that transaction.
+   * @return {Number, Number, string} The implicit start, implicit end, and root.
+   */
   static calculateRootAndBounds (transaction, transferProof) {
     transaction = new UnsignedTransaction(transaction)
     transferProof = new TransferProof(transferProof)
@@ -51783,20 +51799,20 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
   /**
    * Checks whether a given transaction was included in the right branch for a particula transfer.
    * @param {UnsignedTransaction} transaction An UnsignedTransaction object.
-   * @param {*} transactionProof A TransactionProof object.
-   * @param {*} root The root node of the tree to check.
+   * @param {TransactionProof} transactionProof A TransactionProof object.
+   * @param {string} root The root node of the tree to check.
    * @return {boolean} `true` if the transaction is in the tree, `false` otherwise.
    */
   static checkTransactionProof (transaction, transactionProof, root) {
-    return (
-      transactionProof.transferProofs.every((transferProof, transferIndex) => {
+    return transactionProof.transferProofs.every(
+      (transferProof, transferIndex) => {
         return this.checkTransferProof(
           transaction,
           transferIndex,
           transferProof,
           root
         )
-      })
+      }
     )
   }
 }
@@ -51865,9 +51881,11 @@ class MerkleSumTree {
 module.exports = MerkleSumTree
 
 },{"./merkle-tree-node":313,"web3":272}],316:[function(require,module,exports){
+(function (Buffer){
 const BigNum = require('bn.js')
 const Web3 = require('web3')
 const models = require('./serialization').models
+const Signature = models.Signature
 const accounts = require('./constants').ACCOUNTS
 const UnsignedTransaction = models.UnsignedTransaction
 const SignedTransaction = models.SignedTransaction
@@ -51891,11 +51909,46 @@ const sign = (data, key) => {
   return web3.eth.accounts.sign(data, key)
 }
 
+/**
+ * Checks if something is a string
+ * @param {*} str Thing that might be a string.
+ * @return {boolean} `true` if the thing is a string, `false` otherwise.
+ */
+const isString = (str) => {
+  return (str instanceof String || typeof str === 'string')
+}
+
+/**
+ * Converts a signature object into a string.
+ * @param {Object} signature A signature object with v,r,s buffers.
+ * @return {string} Signature as a hex string.
+ */
 const signatureToString = (signature) => {
-  if (signature instanceof String || typeof signature === 'string') {
+  if (isString(signature)) {
     return signature
   }
-  return '0x' + signature.r.toString('hex') + signature.s.toString('hex') + signature.v.toString('hex')
+  return (
+    '0x' +
+    signature.r.toString('hex') +
+    signature.s.toString('hex') +
+    signature.v.toString('hex')
+  )
+}
+
+/**
+ * Converts a string into a signature object.
+ * @param {string} signature A signature string.
+ * @return {Object} A signature object with v,r,s.
+ */
+const stringToSignature = (signature) => {
+  if (!isString(signature)) {
+    return signature
+  }
+  return new Signature({
+    r: Buffer.from(signature.slice(0, 64), 'hex'),
+    s: Buffer.from(signature.slice(64, 128), 'hex'),
+    v: Buffer.from(signature.slice(128, 132), 'hex')
+  })
 }
 
 /**
@@ -51963,8 +52016,12 @@ module.exports = {
   int32ToHex,
   getSequentialTxs,
   genRandomTX,
-  signatureToString
+  isString,
+  signatureToString,
+  stringToSignature
 }
 
-},{"./constants":289,"./serialization":294,"bn.js":20,"web3":272}]},{},[1])
+}).call(this,require("buffer").Buffer)
+
+},{"./constants":289,"./serialization":294,"bn.js":20,"buffer":53,"web3":272}]},{},[1])
 //# sourceMappingURL=plasma-utils.js.map
