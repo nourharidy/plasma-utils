@@ -1,8 +1,8 @@
 const BigNum = require('bn.js')
 const Web3 = require('web3')
 const models = require('./serialization').models
-const Signature = models.Signature
 const accounts = require('./constants').ACCOUNTS
+const Signature = models.Signature
 const UnsignedTransaction = models.UnsignedTransaction
 const SignedTransaction = models.SignedTransaction
 const web3 = new Web3()
@@ -23,6 +23,24 @@ const getRandomAccount = () => {
 
 const sign = (data, key) => {
   return web3.eth.accounts.sign(data, key)
+}
+
+/**
+ * Removes "0x" from start of a string if it exists.
+ * @param {string} str String to modify.
+ * @return {string} The string without "0x".
+ */
+const remove0x = (str) => {
+  return str.startsWith('0x') ? str.slice(2) : str
+}
+
+/**
+ * Adds "0x" to the start of a string if necessary.
+ * @param {string} str String to modify.
+ * @return {string} The string with "0x".
+ */
+const add0x = (str) => {
+  return str.startsWith('0x') ? str : '0x' + str
 }
 
 /**
@@ -60,6 +78,7 @@ const stringToSignature = (signature) => {
   if (!isString(signature)) {
     return signature
   }
+  signature = remove0x(signature)
   return new Signature({
     r: Buffer.from(signature.slice(0, 64), 'hex'),
     s: Buffer.from(signature.slice(64, 128), 'hex'),
@@ -132,6 +151,8 @@ module.exports = {
   int32ToHex,
   getSequentialTxs,
   genRandomTX,
+  remove0x,
+  add0x,
   isString,
   signatureToString,
   stringToSignature

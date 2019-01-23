@@ -32,7 +32,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
           return {
             start: new BigNum(transfer.start),
             end: new BigNum(transfer.end),
-            encoded: '0x' + unsigned.encoded
+            encoded: utils.add0x(unsigned.encoded)
           }
         })
         return prev.concat(parsedTransfers)
@@ -209,7 +209,9 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       .reverse()
       .join('')
 
-    const transactionHash = PlasmaMerkleSumTree.hash('0x' + transaction.encoded)
+    const transactionHash = PlasmaMerkleSumTree.hash(
+      utils.add0x(transaction.encoded)
+    )
 
     let computedNode = new MerkleTreeNode(
       transactionHash,

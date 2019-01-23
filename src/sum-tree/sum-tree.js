@@ -1,4 +1,5 @@
 const web3 = require('web3')
+const utils = require('../utils')
 const MerkleTreeNode = require('./merkle-tree-node')
 
 class MerkleSumTree {
@@ -14,15 +15,22 @@ class MerkleSumTree {
   }
 
   static hash (value) {
+    value = utils.add0x(value)
     return web3.utils.soliditySha3(value)
   }
 
   static parent (left, right) {
-    return new MerkleTreeNode(MerkleSumTree.hash('0x' + left.data + right.data), (left.sum.add(right.sum)))
+    return new MerkleTreeNode(
+      MerkleSumTree.hash(left.data + right.data),
+      left.sum.add(right.sum)
+    )
   }
 
   static emptyLeaf () {
-    return new MerkleTreeNode('0x0000000000000000000000000000000000000000000000000000000000000000', 0)
+    return new MerkleTreeNode(
+      '0x0000000000000000000000000000000000000000000000000000000000000000',
+      0
+    )
   }
 
   root () {
@@ -43,7 +51,8 @@ class MerkleSumTree {
     let parents = []
     for (let i = 0; i < children.length; i += 2) {
       let left = children[i]
-      let right = (i + 1 === children.length) ? MerkleSumTree.emptyLeaf() : children[i + 1]
+      let right =
+        i + 1 === children.length ? MerkleSumTree.emptyLeaf() : children[i + 1]
       let parent = MerkleSumTree.parent(left, right)
       parents.push(parent)
     }

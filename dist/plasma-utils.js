@@ -51504,27 +51504,24 @@ const TransferSchema = new Schema({
 module.exports = TransferSchema
 
 },{"../schema":306,"../schema-types/address":302,"../schema-types/number":305}],313:[function(require,module,exports){
-const BN = require('web3').utils.BN
+const BigNum = require('bn.js')
+const utils = require('../utils')
 
 /**
  * Represents a Merkle tree node.
  */
 class MerkleTreeNode {
   constructor (hash, sum) {
-    this.sum = new BN(sum)
+    this.sum = new BigNum(sum, 'hex')
 
-    if (hash.startsWith('0x')) {
-      hash = hash.slice(2)
-    }
-
-    this.hash = hash
-    this.data = hash + this.sum.toString(16, 32)
+    this.hash = utils.remove0x(hash)
+    this.data = this.hash + this.sum.toString(16, 32)
   }
 }
 
 module.exports = MerkleTreeNode
 
-},{"web3":272}],314:[function(require,module,exports){
+},{"../utils":316,"bn.js":20}],314:[function(require,module,exports){
 (function (Buffer){
 const BigNum = require('bn.js')
 const Web3 = require('web3')
@@ -51560,7 +51557,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
           return {
             start: new BigNum(transfer.start),
             end: new BigNum(transfer.end),
-            encoded: '0x' + unsigned.encoded
+            encoded: utils.add0x(unsigned.encoded)
           }
         })
         return prev.concat(parsedTransfers)
@@ -51737,7 +51734,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       .reverse()
       .join('')
 
-    const transactionHash = PlasmaMerkleSumTree.hash('0x' + transaction.encoded)
+    const transactionHash = PlasmaMerkleSumTree.hash(utils.add0x(transaction.encoded))
 
     let computedNode = new MerkleTreeNode(
       transactionHash,
@@ -51823,6 +51820,7 @@ module.exports = PlasmaMerkleSumTree
 
 },{"../../node_modules/is-buffer/index.js":136,"../constants":289,"../serialization":294,"../utils":316,"./merkle-tree-node":313,"./sum-tree":315,"bn.js":20,"web3":272}],315:[function(require,module,exports){
 const web3 = require('web3')
+const utils = require('../utils')
 const MerkleTreeNode = require('./merkle-tree-node')
 
 class MerkleSumTree {
@@ -51838,11 +51836,12 @@ class MerkleSumTree {
   }
 
   static hash (value) {
+    value = utils.add0x(value)
     return web3.utils.soliditySha3(value)
   }
 
   static parent (left, right) {
-    return new MerkleTreeNode(MerkleSumTree.hash('0x' + left.data + right.data), (left.sum.add(right.sum)))
+    return new MerkleTreeNode(MerkleSumTree.hash(left.data + right.data), (left.sum.add(right.sum)))
   }
 
   static emptyLeaf () {
@@ -51880,13 +51879,13 @@ class MerkleSumTree {
 
 module.exports = MerkleSumTree
 
-},{"./merkle-tree-node":313,"web3":272}],316:[function(require,module,exports){
+},{"../utils":316,"./merkle-tree-node":313,"web3":272}],316:[function(require,module,exports){
 (function (Buffer){
 const BigNum = require('bn.js')
 const Web3 = require('web3')
 const models = require('./serialization').models
-const Signature = models.Signature
 const accounts = require('./constants').ACCOUNTS
+const Signature = models.Signature
 const UnsignedTransaction = models.UnsignedTransaction
 const SignedTransaction = models.SignedTransaction
 const web3 = new Web3()
@@ -51910,12 +51909,30 @@ const sign = (data, key) => {
 }
 
 /**
+ * Removes "0x" from start of a string if it exists.
+ * @param {string} str String to modify.
+ * @return {string} The string without "0x".
+ */
+const remove0x = (str) => {
+  return str.startsWith('0x') ? str.slice(2) : str
+}
+
+/**
+ * Adds "0x" to the start of a string if necessary.
+ * @param {string} str String to modify.
+ * @return {string} The string with "0x".
+ */
+const add0x = (str) => {
+  return str.startsWith('0x') ? str : '0x' + str
+}
+
+/**
  * Checks if something is a string
  * @param {*} str Thing that might be a string.
  * @return {boolean} `true` if the thing is a string, `false` otherwise.
  */
 const isString = (str) => {
-  return (str instanceof String || typeof str === 'string')
+  return str instanceof String || typeof str === 'string'
 }
 
 /**
@@ -51944,6 +51961,7 @@ const stringToSignature = (signature) => {
   if (!isString(signature)) {
     return signature
   }
+  signature = remove0x(signature)
   return new Signature({
     r: Buffer.from(signature.slice(0, 64), 'hex'),
     s: Buffer.from(signature.slice(64, 128), 'hex'),
@@ -52016,6 +52034,8 @@ module.exports = {
   int32ToHex,
   getSequentialTxs,
   genRandomTX,
+  remove0x,
+  add0x,
   isString,
   signatureToString,
   stringToSignature
