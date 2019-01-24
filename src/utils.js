@@ -25,6 +25,12 @@ const sign = (data, key) => {
   return web3.eth.accounts.sign(data, key)
 }
 
+const sleep = (ms) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
+}
+
 /**
  * Removes "0x" from start of a string if it exists.
  * @param {string} str String to modify.
@@ -151,6 +157,7 @@ module.exports = {
   int32ToHex,
   getSequentialTxs,
   genRandomTX,
+  sleep,
   remove0x,
   add0x,
   isString,

@@ -51734,7 +51734,9 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       .reverse()
       .join('')
 
-    const transactionHash = PlasmaMerkleSumTree.hash(utils.add0x(transaction.encoded))
+    const transactionHash = PlasmaMerkleSumTree.hash(
+      utils.add0x(transaction.encoded)
+    )
 
     let computedNode = new MerkleTreeNode(
       transactionHash,
@@ -51841,11 +51843,17 @@ class MerkleSumTree {
   }
 
   static parent (left, right) {
-    return new MerkleTreeNode(MerkleSumTree.hash(left.data + right.data), (left.sum.add(right.sum)))
+    return new MerkleTreeNode(
+      MerkleSumTree.hash(left.data + right.data),
+      left.sum.add(right.sum)
+    )
   }
 
   static emptyLeaf () {
-    return new MerkleTreeNode('0x0000000000000000000000000000000000000000000000000000000000000000', 0)
+    return new MerkleTreeNode(
+      '0x0000000000000000000000000000000000000000000000000000000000000000',
+      0
+    )
   }
 
   root () {
@@ -51866,7 +51874,8 @@ class MerkleSumTree {
     let parents = []
     for (let i = 0; i < children.length; i += 2) {
       let left = children[i]
-      let right = (i + 1 === children.length) ? MerkleSumTree.emptyLeaf() : children[i + 1]
+      let right =
+        i + 1 === children.length ? MerkleSumTree.emptyLeaf() : children[i + 1]
       let parent = MerkleSumTree.parent(left, right)
       parents.push(parent)
     }
@@ -51906,6 +51915,12 @@ const getRandomAccount = () => {
 
 const sign = (data, key) => {
   return web3.eth.accounts.sign(data, key)
+}
+
+const sleep = (ms) => {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms)
+  })
 }
 
 /**
@@ -52034,6 +52049,7 @@ module.exports = {
   int32ToHex,
   getSequentialTxs,
   genRandomTX,
+  sleep,
   remove0x,
   add0x,
   isString,
