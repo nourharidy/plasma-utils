@@ -1,4 +1,4 @@
-const BN = require('web3').utils.BN
+const BN = require('bn.js')
 
 const DEPOSIT_METHOD = 'deposit'
 const START_BYTE_SIZE = 12

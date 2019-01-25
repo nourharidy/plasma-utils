@@ -1,5 +1,5 @@
 const chai = require('chai')
-const BN = require('web3').utils.BN
+const BN = require('bn.js')
 
 const MerkleSumTree = require('../../src/sum-tree/sum-tree')
 

@@ -1,5 +1,5 @@
 const BigNum = require('bn.js')
-const Web3 = require('web3')
+const web3Utils = require('../web3-utils')
 
 const MerkleSumTree = require('./sum-tree')
 const MerkleTreeNode = require('./merkle-tree-node')
@@ -10,8 +10,6 @@ const TransferProof = models.TransferProof
 const TransactionProof = models.TransactionProof
 const constants = require('../constants')
 const utils = require('../utils')
-
-const web3 = new Web3()
 
 /**
  * Class that represents the special type of Merkle sum tree we use.
@@ -162,7 +160,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       transfer.start.gte(implicitStart) && transfer.end.lte(implicitEnd)
     const validRoot = computedRoot === root
     const validSig =
-      web3.eth.accounts.recover(
+      web3Utils.recover(
         transaction.hash,
         utils.signatureToString(transferProof.signature)
       ) === transfer.sender

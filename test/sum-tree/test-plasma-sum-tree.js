@@ -79,7 +79,8 @@ describe('PlasmaMerkleSumTree', () => {
 
   describe('Proof Checking', () => {
     const numDummyTransactions = 100
-    const txs = utils.getSequentialTxs(numDummyTransactions)
+    const blockNum = 1
+    const txs = utils.getSequentialTxs(numDummyTransactions, blockNum)
     const tree = new PlasmaMerkleSumTree(txs)
     const index = Math.floor(Math.random() * numDummyTransactions)
     const tx = tree.leaves[index]

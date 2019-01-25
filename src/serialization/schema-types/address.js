@@ -1,4 +1,4 @@
-const web3 = require('web3')
+const web3Utils = require('../../web3-utils')
 const BaseSchemaType = require('./base-schema-type')
 
 /**
@@ -12,7 +12,7 @@ class SchemaAddress extends BaseSchemaType {
       required: (_) => {
         return {
           validate: (v) => {
-            return web3.utils.isAddress(v)
+            return web3Utils.isAddress(v)
           },
           message: 'Address must be a valid Ethereum address',
           type: 'required'
@@ -34,7 +34,7 @@ class SchemaAddress extends BaseSchemaType {
   decode (value) {
     const decoded = '0x' + value
     this.validate(decoded)
-    return web3.utils.toChecksumAddress(decoded)
+    return web3Utils.toChecksumAddress(decoded)
   }
 }
 
