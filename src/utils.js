@@ -1,11 +1,10 @@
 const BigNum = require('bn.js')
-const Web3 = require('web3')
+const web3Utils = require('./web3-utils')
 const models = require('./serialization').models
 const accounts = require('./constants').ACCOUNTS
 const Signature = models.Signature
 const UnsignedTransaction = models.UnsignedTransaction
 const SignedTransaction = models.SignedTransaction
-const web3 = new Web3()
 
 const int32ToHex = (x) => {
   x &= 0xffffffff
@@ -22,7 +21,7 @@ const getRandomAccount = () => {
 }
 
 const sign = (data, key) => {
-  return web3.eth.accounts.sign(data, key)
+  return web3Utils.sign(data, key)
 }
 
 const sleep = (ms) => {

@@ -1,4 +1,4 @@
-const Web3 = require('web3')
+const web3Utils = require('../../web3-utils')
 
 /**
  * Base model that makes use of a particular schema.
@@ -19,7 +19,7 @@ class BaseModel {
   }
 
   get hash () {
-    return Web3.utils.sha3('0x' + this.encoded)
+    return web3Utils.sha3('0x' + this.encoded)
   }
 
   _parseArgs (args) {

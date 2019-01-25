@@ -36,7 +36,7 @@
   "dependencies": {
     "debug": "^4.1.1",
     "lodash": "^4.17.11",
-    "web3": "^1.0.0-beta.37"
+    "web3-eth-accounts": "^1.0.0-beta.38"
   },
   "devDependencies": {
     "browserify": "^16.2.3",

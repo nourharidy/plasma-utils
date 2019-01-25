@@ -1,8 +1,6 @@
-const Web3 = require('web3')
+const web3Utils = require('../../web3-utils')
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
-
-const web3 = new Web3()
 
 /**
  * Represents a transaction.
@@ -34,7 +32,7 @@ class SignedTransaction extends BaseModel {
         sig.r.toString('hex') +
         sig.s.toString('hex') +
         sig.v.toString('hex')
-      const signer = web3.eth.accounts.recover(unsigned.hash, sigString)
+      const signer = web3Utils.recover(unsigned.hash, sigString)
       return signer === transfer.sender
     })
   }
