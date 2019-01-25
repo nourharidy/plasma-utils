@@ -97,7 +97,7 @@ const stringToSignature = (signature) => {
  * @param {*} n Number of sequential transactions to return.
  * @return {*} A list of sequential transactions.
  */
-const getSequentialTxs = (n) => {
+const getSequentialTxs = (n, blockNum) => {
   let txs = []
 
   for (let i = 0; i < n; i++) {
@@ -105,7 +105,7 @@ const getSequentialTxs = (n) => {
     let recipient = getRandomAccount()
 
     let unsignedTx = new UnsignedTransaction({
-      block: 0,
+      block: blockNum,
       transfers: [
         {
           sender: sender.address,
