@@ -73,7 +73,7 @@ describe('PlasmaMerkleSumTree', () => {
 
     it('should generate an odd tree w/ multiple types correctly', () => {
       const tree = new PlasmaMerkleSumTree([tx1, tx2, tx3])
-      tree.root().data.should.equal('c5368f3c6605397f922c2288895c41b5d08ae44d091f12eb8749fbf357d3044a' + 'ffffffffffffffffffffffffffffffff')
+      tree.root().data.should.equal('aa424a2e56b315ee500eaa90ca12116667d863c9d6548ab00319d2519289d5eb' + 'ffffffffffffffffffffffffffffffff')
     })
   })
 
