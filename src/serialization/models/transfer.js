@@ -13,26 +13,28 @@ class Transfer extends BaseModel {
   get typedStart () {
     return new BN(
       this.token.toString(
-        16,
+        'hex',
         schemas.TransferSchema.fields.token.options.length * 2
       ) +
         this.start.toString(
-          16,
+          'hex',
           schemas.TransferSchema.fields.start.options.length * 2
-        )
+        ),
+      'hex'
     )
   }
 
   get typedEnd () {
     return new BN(
       this.token.toString(
-        16,
+        'hex',
         schemas.TransferSchema.fields.token.options.length * 2
       ) +
         this.end.toString(
-          16,
+          'hex',
           schemas.TransferSchema.fields.end.options.length * 2
-        )
+        ),
+      'hex'
     )
   }
 }
