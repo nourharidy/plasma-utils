@@ -4,6 +4,7 @@ const web3Utils = require('../web3-utils')
 const MerkleSumTree = require('./sum-tree')
 const MerkleTreeNode = require('./merkle-tree-node')
 const models = require('../serialization').models
+const Transfer = models.Transfer
 const UnsignedTransaction = models.UnsignedTransaction
 const Signature = models.Signature
 const TransferProof = models.TransferProof
@@ -27,9 +28,10 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       .reduce((prev, curr) => {
         const unsigned = new UnsignedTransaction(curr)
         let parsedTransfers = curr.transfers.map((transfer) => {
+          const cast = new Transfer(transfer)
           return {
-            start: new BigNum(transfer.start),
-            end: new BigNum(transfer.end),
+            start: new BigNum(cast.typedStart),
+            end: new BigNum(cast.typedEnd),
             encoded: utils.add0x(unsigned.encoded)
           }
         })
@@ -153,12 +155,13 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
       implicitEnd
     } = PlasmaMerkleSumTree.calculateRootAndBounds(transaction, transferProof)
 
-    const transfer = transaction.transfers[transferIndex]
+    const transfer = new Transfer(transaction.transfers[transferIndex])
 
     // Check validity conditions.
     const validSum =
-      transfer.start.gte(implicitStart) && transfer.end.lte(implicitEnd)
-    const validRoot = computedRoot === root
+      transfer.typedStart.gte(implicitStart) &&
+      transfer.typedEnd.lte(implicitEnd)
+    const validRoot = utils.remove0x(computedRoot) === utils.remove0x(root)
     const validSig =
       web3Utils.recover(
         transaction.hash,
