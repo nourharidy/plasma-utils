@@ -161,11 +161,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     const validSum =
       transfer.typedStart.gte(implicitStart) &&
       transfer.typedEnd.lte(implicitEnd)
-<<<<<<< HEAD
     const validRoot = utils.remove0x(computedRoot) === utils.remove0x(root)
-=======
-    const validRoot = computedRoot === root
->>>>>>> 9ff1546a5cd460080c0bd3bd81835e4b4e519b0b
     const validSig =
       web3Utils.recover(
         transaction.hash,
