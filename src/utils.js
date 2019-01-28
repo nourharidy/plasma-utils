@@ -157,9 +157,11 @@ module.exports = {
   getSequentialTxs,
   genRandomTX,
   sleep,
+  web3Utils,
   remove0x,
   add0x,
   isString,
   signatureToString,
-  stringToSignature
+  stringToSignature,
+  sign
 }
