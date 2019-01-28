@@ -161,5 +161,6 @@ module.exports = {
   add0x,
   isString,
   signatureToString,
-  stringToSignature
+  stringToSignature,
+  sign
 }
