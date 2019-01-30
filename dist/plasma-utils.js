@@ -16508,7 +16508,7 @@ module.exports={
   "_args": [
     [
       "elliptic@6.4.1",
-      "/Users/ben/plasma/plasma-utils"
+      "/home/k/Projects/pg/plasma/plasma-utils"
     ]
   ],
   "_from": "elliptic@6.4.1",
@@ -16534,7 +16534,7 @@ module.exports={
   ],
   "_resolved": "https://registry.npmjs.org/elliptic/-/elliptic-6.4.1.tgz",
   "_spec": "6.4.1",
-  "_where": "/Users/ben/plasma/plasma-utils",
+  "_where": "/home/k/Projects/pg/plasma/plasma-utils",
   "author": {
     "name": "Fedor Indutny",
     "email": "fedor@indutny.com"
@@ -44812,7 +44812,7 @@ module.exports={
   ],
   "_resolved": "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
   "_spec": "websocket@git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
-  "_where": "/Users/ben/plasma/plasma-utils/node_modules/web3-providers",
+  "_where": "/home/k/Projects/pg/plasma/plasma-utils/node_modules/web3-providers",
   "author": {
     "name": "Brian McKelvey",
     "email": "brian@worlize.com",
@@ -46351,6 +46351,10 @@ class SignedTransaction extends BaseModel {
     super(args, schemas.SignedTransactionSchema)
   }
 
+  get hash () {
+    return new UnsignedTransaction(this).hash
+  }
+
   /**
    * Checks if this transaction is correctly signed.
    * @return {boolean} `true` if the transaction is correctly signed, `false` otherwise.
@@ -47173,7 +47177,7 @@ class PlasmaMerkleSumTree extends MerkleSumTree {
     const validSum =
       transfer.typedStart.gte(implicitStart) &&
       transfer.typedEnd.lte(implicitEnd)
-    const validRoot = computedRoot === root
+    const validRoot = utils.remove0x(computedRoot) === utils.remove0x(root)
     const validSig =
       web3Utils.recover(
         transaction.hash,
@@ -47537,11 +47541,13 @@ module.exports = {
   getSequentialTxs,
   genRandomTX,
   sleep,
+  web3Utils,
   remove0x,
   add0x,
   isString,
   signatureToString,
-  stringToSignature
+  stringToSignature,
+  sign
 }
 
 }).call(this,require("buffer").Buffer)
