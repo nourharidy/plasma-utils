@@ -19,6 +19,10 @@ class SignedTransaction extends BaseModel {
     super(args, schemas.SignedTransactionSchema)
   }
 
+  get hash () {
+    return new UnsignedTransaction(this).hash
+  }
+
   /**
    * Checks if this transaction is correctly signed.
    * @return {boolean} `true` if the transaction is correctly signed, `false` otherwise.
