@@ -4,6 +4,9 @@
 `plasma-utils` is the set of core utilities for the Plasma Group series of projects.
 These utilities can be imported into other projects when necessary or convenient.
 
+## Documentation
+Detailed documentation for `plasma-utils` is available on ReadTheDocs: https://plasma-utils.readthedocs.io/en/latest/.
+
 ## Installation
 There are several easy ways to start using `plasma-utils`! 
 

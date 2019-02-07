@@ -14,7 +14,7 @@ Schemas
 TransferSchema
 --------------
 
-.. code-block: javascript
+.. code-block:: javascript
 
     const TransferSchema = new Schema({
       token: {
@@ -52,7 +52,7 @@ By allowing a transaction to support more than one transfer, we enable atomic sw
 SignatureSchema
 ---------------
 
-.. code-block: javascript
+.. code-block:: javascript
 
     const SignatureSchema = new Schema({
       v: {
@@ -80,7 +80,7 @@ A `Signature` is a simple representation of an ECDSA signature.
 Transaction
 -----------
 
-.. code-block: javascript
+.. code-block:: javascript
 
     const TransactionSchema = new Schema({
       block: {

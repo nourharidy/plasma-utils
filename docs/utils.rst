@@ -1,16 +1,20 @@
 =========
 Utilities
 =========
+``plasma-utils.utils`` provides miscellaneous utilities often used when interacting with plasma chains.
 
-Description
-===========
-``plasma-utils.utils`` provides miscellaneous utilities.
+.. code-block:: javascript
 
-API
-===
-.. code-block: javascript
+    const utils = require('plasma-utils').utils
 
-    int32ToHex(x)
+-----------------------------------------------------------------------------
+
+int32ToHex
+==========
+
+.. code-block:: javascript
+
+    utils.int32ToHex(x)
 
 Converts a 32 byte integer to a hex string.
 
@@ -18,10 +22,10 @@ Converts a 32 byte integer to a hex string.
 Parameters
 ----------
 
-1. ``x`` - ``Number``: A 32 byte integer.
+1. ``x`` - ``number``: A 32 byte integer.
 
 -------
 Returns
 -------
 
-``String``: The integer represented as a hex string.
+``string``: The integer represented as a hex string.
