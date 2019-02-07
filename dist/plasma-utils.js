@@ -44791,28 +44791,30 @@ module.exports = require('../package.json').version;
 
 },{"../package.json":401}],401:[function(require,module,exports){
 module.exports={
+  "_args": [
+    [
+      "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
+      "/home/k/Projects/pg/plasma/plasma-utils"
+    ]
+  ],
   "_from": "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
-  "_id": "websocket@1.0.26",
+  "_id": "websocket@git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
   "_inBundle": false,
   "_integrity": "",
   "_location": "/web3-providers/websocket",
   "_phantomChildren": {},
   "_requested": {
     "type": "git",
-    "raw": "websocket@git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
-    "name": "websocket",
-    "escapedName": "websocket",
+    "raw": "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
     "rawSpec": "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
     "saveSpec": "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
     "fetchSpec": "git://github.com/frozeman/WebSocket-Node.git",
     "gitCommittish": "6c72925e3f8aaaea8dc8450f97627e85263999f2"
   },
-  "_requiredBy": [
-    "/web3-providers"
-  ],
+  "_requiredBy": [],
   "_resolved": "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
-  "_spec": "websocket@git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
-  "_where": "/home/k/Projects/pg/plasma/plasma-utils/node_modules/web3-providers",
+  "_spec": "git://github.com/frozeman/WebSocket-Node.git#6c72925e3f8aaaea8dc8450f97627e85263999f2",
+  "_where": "/home/k/Projects/pg/plasma/plasma-utils",
   "author": {
     "name": "Brian McKelvey",
     "email": "brian@worlize.com",
@@ -44822,7 +44824,6 @@ module.exports={
   "bugs": {
     "url": "https://github.com/theturtle32/WebSocket-Node/issues"
   },
-  "bundleDependencies": false,
   "config": {
     "verbose": false
   },
@@ -44839,7 +44840,6 @@ module.exports={
     "typedarray-to-buffer": "^3.1.2",
     "yaeti": "^0.0.6"
   },
-  "deprecated": false,
   "description": "Websocket Client & Server Library implementing the WebSocket protocol as specified in RFC 6455.",
   "devDependencies": {
     "buffer-equal": "^1.0.0",
@@ -46236,7 +46236,8 @@ module.exports = {
 
 },{"./models":417,"./schemas":428}],416:[function(require,module,exports){
 (function (Buffer){
-const web3Utils = require('../../web3-utils')
+const web3Utils = require('../../utils/web3')
+const miscUtils = require('../../utils/misc')
 
 /**
  * Base model that makes use of a particular schema.
@@ -46262,12 +46263,13 @@ class BaseModel {
 
   _parseArgs (args) {
     if (Buffer.isBuffer(args)) {
-      args = this.schema.decode(args.toString('hex'))
+      args = args.toString('hex')
     }
-    if (args instanceof String || typeof args === 'string') {
+    if (miscUtils.isString(args)) {
+      args = miscUtils.remove0x(args)
       args = this.schema.decode(args)
     }
-    if (typeof args === 'object' && args !== null) {
+    if (miscUtils.isObject(args)) {
       args = Object.assign({}, args)
     }
 
@@ -46282,7 +46284,7 @@ module.exports = BaseModel
 
 }).call(this,{"isBuffer":require("../../../node_modules/is-buffer/index.js")})
 
-},{"../../../node_modules/is-buffer/index.js":134,"../../web3-utils":438}],417:[function(require,module,exports){
+},{"../../../node_modules/is-buffer/index.js":134,"../../utils/misc":438,"../../utils/web3":440}],417:[function(require,module,exports){
 const Signature = require('./signature')
 const Transfer = require('./transfer')
 const SignedTransaction = require('./transaction').SignedTransaction
@@ -46330,7 +46332,7 @@ class TransactionProof extends BaseModel {
 module.exports = TransactionProof
 
 },{"../schemas":428,"./base-model":416}],420:[function(require,module,exports){
-const web3Utils = require('../../web3-utils')
+const web3Utils = require('../../utils/web3')
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
 
@@ -46379,7 +46381,7 @@ module.exports = {
   SignedTransaction
 }
 
-},{"../../web3-utils":438,"../schemas":428,"./base-model":416}],421:[function(require,module,exports){
+},{"../../utils/web3":440,"../schemas":428,"./base-model":416}],421:[function(require,module,exports){
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
 
@@ -46439,7 +46441,7 @@ class Transfer extends BaseModel {
 module.exports = Transfer
 
 },{"../schemas":428,"./base-model":416,"bn.js":33}],423:[function(require,module,exports){
-const web3Utils = require('../../web3-utils')
+const web3Utils = require('../../utils/web3')
 const BaseSchemaType = require('./base-schema-type')
 
 /**
@@ -46481,7 +46483,7 @@ class SchemaAddress extends BaseSchemaType {
 
 module.exports = SchemaAddress
 
-},{"../../web3-utils":438,"./base-schema-type":424}],424:[function(require,module,exports){
+},{"../../utils/web3":440,"./base-schema-type":424}],424:[function(require,module,exports){
 /**
  * Base schema type that can be extended.
  */
@@ -46868,11 +46870,6 @@ const Schema = require('../schema')
 const Bytes = require('../schema-types/bytes')
 
 const SignatureSchema = new Schema({
-  v: {
-    type: Bytes,
-    length: 1,
-    required: true
-  },
   r: {
     type: Bytes,
     length: 32,
@@ -46881,6 +46878,11 @@ const SignatureSchema = new Schema({
   s: {
     type: Bytes,
     length: 32,
+    required: true
+  },
+  v: {
+    type: Bytes,
+    length: 1,
     required: true
   }
 })
@@ -47015,8 +47017,7 @@ module.exports = MerkleTreeNode
 },{"../utils":437,"bn.js":33}],435:[function(require,module,exports){
 (function (Buffer){
 const BigNum = require('bn.js')
-const web3Utils = require('../web3-utils')
-
+const web3Utils = require('../utils/web3')
 const MerkleSumTree = require('./sum-tree')
 const MerkleTreeNode = require('./merkle-tree-node')
 const models = require('../serialization').models
@@ -47312,9 +47313,9 @@ module.exports = PlasmaMerkleSumTree
 
 }).call(this,{"isBuffer":require("../../node_modules/is-buffer/index.js")})
 
-},{"../../node_modules/is-buffer/index.js":134,"../constants":410,"../serialization":415,"../utils":437,"../web3-utils":438,"./merkle-tree-node":434,"./sum-tree":436,"bn.js":33}],436:[function(require,module,exports){
-const web3Utils = require('../web3-utils')
-const utils = require('../utils')
+},{"../../node_modules/is-buffer/index.js":134,"../constants":410,"../serialization":415,"../utils":437,"../utils/web3":440,"./merkle-tree-node":434,"./sum-tree":436,"bn.js":33}],436:[function(require,module,exports){
+const web3Utils = require('../utils/web3')
+const miscUtils = require('../utils/misc')
 const MerkleTreeNode = require('./merkle-tree-node')
 
 class MerkleSumTree {
@@ -47330,7 +47331,7 @@ class MerkleSumTree {
   }
 
   static hash (value) {
-    value = utils.add0x(value)
+    value = miscUtils.add0x(value)
     return web3Utils.soliditySha3(value)
   }
 
@@ -47380,34 +47381,21 @@ class MerkleSumTree {
 
 module.exports = MerkleSumTree
 
-},{"../utils":437,"../web3-utils":438,"./merkle-tree-node":434}],437:[function(require,module,exports){
-(function (Buffer){
-const BigNum = require('bn.js')
-const web3Utils = require('./web3-utils')
-const models = require('./serialization').models
-const accounts = require('./constants').ACCOUNTS
-const Signature = models.Signature
-const UnsignedTransaction = models.UnsignedTransaction
-const SignedTransaction = models.SignedTransaction
+},{"../utils/misc":438,"../utils/web3":440,"./merkle-tree-node":434}],437:[function(require,module,exports){
+const miscUtils = require('./misc')
+const txUtils = require('./transaction')
+const web3Utils = require('./web3')
 
-const int32ToHex = (x) => {
-  x &= 0xffffffff
-  let hex = x.toString(16).toUpperCase()
-  return ('0000000000000000' + hex).slice(-16)
-}
+const utils = Object.assign({}, miscUtils, txUtils, web3Utils)
 
-const getRandomElement = (arr) => {
-  return arr[Math.floor(Math.random() * arr.length)]
-}
+module.exports = utils
 
-const getRandomAccount = () => {
-  return getRandomElement(accounts)
-}
-
-const sign = (data, key) => {
-  return web3Utils.sign(data, key)
-}
-
+},{"./misc":438,"./transaction":439,"./web3":440}],438:[function(require,module,exports){
+/**
+ * Sleeps for a number of milliseconds.
+ * @param {number} ms Number of ms to sleep.
+ * @return {Promise} Promise that resolves after the number of ms.
+ */
 const sleep = (ms) => {
   return new Promise((resolve) => {
     setTimeout(resolve, ms)
@@ -47442,12 +47430,78 @@ const isString = (str) => {
 }
 
 /**
+ * Checks if something is an Object
+ * @param {*} obj Thing that might be an Object.
+ * @return {boolean} `true` if the thing is a Object, `false` otherwise.
+ */
+const isObject = (obj) => {
+  return typeof obj === 'object' && obj !== null
+}
+
+module.exports = {
+  sleep,
+  remove0x,
+  add0x,
+  isString,
+  isObject
+}
+
+},{}],439:[function(require,module,exports){
+(function (Buffer){
+const BigNum = require('bn.js')
+const miscUtils = require('./misc')
+const web3Utils = require('./web3')
+const models = require('../serialization').models
+const accounts = require('../constants').ACCOUNTS
+const Signature = models.Signature
+const UnsignedTransaction = models.UnsignedTransaction
+const SignedTransaction = models.SignedTransaction
+
+/**
+ * Converts an int32 to a hex string.
+ * @param {number} x int32 to convert.
+ * @return {string} The hex string.
+ */
+const int32ToHex = (x) => {
+  x &= 0xffffffff
+  let hex = x.toString(16).toUpperCase()
+  return ('0000000000000000' + hex).slice(-16)
+}
+
+/**
+ * Returns a random element from an array.
+ * @param {Array} arr An array.
+ * @return {*} An element from the array.
+ */
+const getRandomElement = (arr) => {
+  return arr[Math.floor(Math.random() * arr.length)]
+}
+
+/**
+ * Returns a random account.
+ * @return {*} An account.
+ */
+const getRandomAccount = () => {
+  return getRandomElement(accounts)
+}
+
+/**
+ * Signs a message with a private key.
+ * @param {string} data Message to sign.
+ * @param {string} key The private key.
+ * @return {string} The signature.
+ */
+const sign = (data, key) => {
+  return web3Utils.sign(data, key)
+}
+
+/**
  * Converts a signature object into a string.
  * @param {Object} signature A signature object with v,r,s buffers.
  * @return {string} Signature as a hex string.
  */
 const signatureToString = (signature) => {
-  if (isString(signature)) {
+  if (miscUtils.isString(signature)) {
     return signature
   }
   return (
@@ -47464,10 +47518,10 @@ const signatureToString = (signature) => {
  * @return {Object} A signature object with v,r,s.
  */
 const stringToSignature = (signature) => {
-  if (!isString(signature)) {
+  if (!miscUtils.isString(signature)) {
     return signature
   }
-  signature = remove0x(signature)
+  signature = miscUtils.remove0x(signature)
   return new Signature({
     r: Buffer.from(signature.slice(0, 64), 'hex'),
     s: Buffer.from(signature.slice(64, 128), 'hex'),
@@ -47540,11 +47594,7 @@ module.exports = {
   int32ToHex,
   getSequentialTxs,
   genRandomTX,
-  sleep,
   web3Utils,
-  remove0x,
-  add0x,
-  isString,
   signatureToString,
   stringToSignature,
   sign
@@ -47552,7 +47602,7 @@ module.exports = {
 
 }).call(this,require("buffer").Buffer)
 
-},{"./constants":410,"./serialization":415,"./web3-utils":438,"bn.js":33,"buffer":66}],438:[function(require,module,exports){
+},{"../constants":410,"../serialization":415,"./misc":438,"./web3":440,"bn.js":33,"buffer":66}],440:[function(require,module,exports){
 const { Accounts } = require('web3-eth-accounts')
 const web3Accounts = new Accounts('http://localhost:8545')
 

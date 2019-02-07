@@ -21,7 +21,8 @@ const decodedTransfer = {
   end: new BigNum('3', 'hex')
 }
 
-const encodedSignature = '1bd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c04224e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b354'
+const ethereumSignature = '0xd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c04224e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b3541b'
+const encodedSignature = 'd693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c04224e9c602ac800b983b035700a14b23f78a253ab762deab5dc27e3555a750b3541b'
 const decodedSignature = {
   v: Buffer.from('1b', 'hex'),
   r: Buffer.from('d693b532a80fed6392b428604171fb32fdbf953728a3a7ecc7d4062b1652c042', 'hex'),
@@ -112,6 +113,12 @@ describe('Serialization', () => {
 
     it('should be correctly decoded', () => {
       const sig = new Signature(encodedSignature)
+
+      sig.decoded.should.deep.equal(decodedSignature)
+    })
+
+    it('should work from an Ethereum signature', () => {
+      const sig = new Signature(ethereumSignature)
 
       sig.decoded.should.deep.equal(decodedSignature)
     })

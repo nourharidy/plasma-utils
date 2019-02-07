@@ -1,4 +1,4 @@
-const web3Utils = require('../../web3-utils')
+const web3Utils = require('../../utils/web3')
 const BaseModel = require('./base-model')
 const schemas = require('../schemas')
 

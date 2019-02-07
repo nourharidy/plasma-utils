@@ -1,6 +1,5 @@
 const BigNum = require('bn.js')
-const web3Utils = require('../web3-utils')
-
+const web3Utils = require('../utils/web3')
 const MerkleSumTree = require('./sum-tree')
 const MerkleTreeNode = require('./merkle-tree-node')
 const models = require('../serialization').models

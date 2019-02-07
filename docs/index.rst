@@ -11,4 +11,5 @@ Hello and welcome to the documentation of Plasma Group's ``plasma-utils``!
    utils
    logging
    serialization
+   models
    sum-tree

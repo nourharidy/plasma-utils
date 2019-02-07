@@ -1,5 +1,5 @@
-const web3Utils = require('../web3-utils')
-const utils = require('../utils')
+const web3Utils = require('../utils/web3')
+const miscUtils = require('../utils/misc')
 const MerkleTreeNode = require('./merkle-tree-node')
 
 class MerkleSumTree {
@@ -15,7 +15,7 @@ class MerkleSumTree {
   }
 
   static hash (value) {
-    value = utils.add0x(value)
+    value = miscUtils.add0x(value)
     return web3Utils.soliditySha3(value)
   }
 

@@ -1,60 +1,48 @@
 const BigNum = require('bn.js')
-const web3Utils = require('./web3-utils')
-const models = require('./serialization').models
-const accounts = require('./constants').ACCOUNTS
+const miscUtils = require('./misc')
+const web3Utils = require('./web3')
+const models = require('../serialization').models
+const accounts = require('../constants').ACCOUNTS
 const Signature = models.Signature
 const UnsignedTransaction = models.UnsignedTransaction
 const SignedTransaction = models.SignedTransaction
 
+/**
+ * Converts an int32 to a hex string.
+ * @param {number} x int32 to convert.
+ * @return {string} The hex string.
+ */
 const int32ToHex = (x) => {
   x &= 0xffffffff
   let hex = x.toString(16).toUpperCase()
   return ('0000000000000000' + hex).slice(-16)
 }
 
+/**
+ * Returns a random element from an array.
+ * @param {Array} arr An array.
+ * @return {*} An element from the array.
+ */
 const getRandomElement = (arr) => {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
+/**
+ * Returns a random account.
+ * @return {*} An account.
+ */
 const getRandomAccount = () => {
   return getRandomElement(accounts)
 }
 
+/**
+ * Signs a message with a private key.
+ * @param {string} data Message to sign.
+ * @param {string} key The private key.
+ * @return {string} The signature.
+ */
 const sign = (data, key) => {
   return web3Utils.sign(data, key)
-}
-
-const sleep = (ms) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms)
-  })
-}
-
-/**
- * Removes "0x" from start of a string if it exists.
- * @param {string} str String to modify.
- * @return {string} The string without "0x".
- */
-const remove0x = (str) => {
-  return str.startsWith('0x') ? str.slice(2) : str
-}
-
-/**
- * Adds "0x" to the start of a string if necessary.
- * @param {string} str String to modify.
- * @return {string} The string with "0x".
- */
-const add0x = (str) => {
-  return str.startsWith('0x') ? str : '0x' + str
-}
-
-/**
- * Checks if something is a string
- * @param {*} str Thing that might be a string.
- * @return {boolean} `true` if the thing is a string, `false` otherwise.
- */
-const isString = (str) => {
-  return str instanceof String || typeof str === 'string'
 }
 
 /**
@@ -63,7 +51,7 @@ const isString = (str) => {
  * @return {string} Signature as a hex string.
  */
 const signatureToString = (signature) => {
-  if (isString(signature)) {
+  if (miscUtils.isString(signature)) {
     return signature
   }
   return (
@@ -80,10 +68,10 @@ const signatureToString = (signature) => {
  * @return {Object} A signature object with v,r,s.
  */
 const stringToSignature = (signature) => {
-  if (!isString(signature)) {
+  if (!miscUtils.isString(signature)) {
     return signature
   }
-  signature = remove0x(signature)
+  signature = miscUtils.remove0x(signature)
   return new Signature({
     r: Buffer.from(signature.slice(0, 64), 'hex'),
     s: Buffer.from(signature.slice(64, 128), 'hex'),
@@ -156,11 +144,7 @@ module.exports = {
   int32ToHex,
   getSequentialTxs,
   genRandomTX,
-  sleep,
   web3Utils,
-  remove0x,
-  add0x,
-  isString,
   signatureToString,
   stringToSignature,
   sign
