@@ -49,9 +49,9 @@ token
 
 ID of the token being transferred.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``BigNum``: The token ID.
 
@@ -66,9 +66,9 @@ start
 
 Start of the range being transferred.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``BigNum``: The range start.
 
@@ -85,9 +85,9 @@ The "typed" start of the range being transferred.
 Calculated by concatenating ``token`` and ``start``.
 Primarily used for calculating state updates in ``plasma-core``.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``BigNum``: The typed start.
 
@@ -102,9 +102,9 @@ end
 
 End of the range being transferred.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``BigNum``: The range end.
 
@@ -121,9 +121,9 @@ The "typed" end of the range being transferred.
 Calculated by concatenating ``token`` and ``end``.
 Primarily used for calculating state updates in ``plasma-core``.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``BigNum``: The typed end.
 
@@ -138,9 +138,9 @@ sender
 
 Address of the user sending the transfer.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``string``: Sender address.
 
@@ -155,9 +155,9 @@ recipient
 
 Address of the user receiving the transfer.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``string``: Recipient address.
 
@@ -172,9 +172,9 @@ encoded
 
 The encoded version of the transfer according to the rules in our schemas_.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``string``: The encoded transfer.
 
@@ -219,9 +219,9 @@ block
 
 The block in which this transaction was included.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``BigNum``: The transaction block number.
 
@@ -236,9 +236,9 @@ transfers
 
 A list of ``Transfers`` that make up this transaction.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``Array<Transfer>``: A list of transfers.
 
@@ -253,9 +253,9 @@ encoded
 
 The hex-encoded version of this transaction.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``string``: Encoded transaction.
 
@@ -270,9 +270,9 @@ hash
 
 The keccak256 (Ethereum's SHA3) hash of the encoded transaction.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``string``: Hash of the transaction.
 
@@ -324,9 +324,9 @@ block
 
 The block in which this transaction was included.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``BigNum``: The transaction block number.
 
@@ -341,9 +341,9 @@ transfers
 
 A list of ``Transfers`` that make up this transaction.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``Array<Transfer>``: A list of transfers.
 
@@ -359,9 +359,9 @@ signatures
 A list of ``Signatures`` on this transaction.
 There should be one signature for each transfer, where the signature is from the sender of the transfer.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``Array<Signature>``: A list of signatures.
 
@@ -376,9 +376,9 @@ encoded
 
 The hex-encoded version of this transaction.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``string``: Encoded transaction.
 
@@ -394,9 +394,9 @@ hash
 The keccak256 (Ethereum's SHA3) hash of the encoded *unsigned* version of this transaction.
 Effectively the same as casting this transaction to an ``UnsignedTransaction`` and getting the hash.
 
--------
+~~~~~~~
 Returns
--------
+~~~~~~~
 
 ``string``: Hash of the *unsigned* version of this transaction.
 
