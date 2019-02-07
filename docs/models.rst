@@ -402,4 +402,25 @@ Returns
 
 -----------------------------------------------------------------------------
 
+-------
+Methods
+-------
+
+-----------------------------------------------------------------------------
+
+checkSigs
+~~~~~~~~~
+
+.. code-block:: javascript
+
+    signed.checkSigs()
+
+Checks that the signatures on the transaction are valid.
+
+~~~~~~~
+Returns
+~~~~~~~
+
+``boolean``: ``true`` if the transaction is valid, ``false`` otherwise.
+
 .. _schemas: serialization.html

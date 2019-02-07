@@ -4,6 +4,7 @@ const web3Utils = require('./web3')
 const models = require('../serialization').models
 const accounts = require('../constants').ACCOUNTS
 const Signature = models.Signature
+const Transfer = models.Transfer
 const UnsignedTransaction = models.UnsignedTransaction
 const SignedTransaction = models.SignedTransaction
 
@@ -81,8 +82,9 @@ const stringToSignature = (signature) => {
 
 /**
  * Returns a list of `n` sequential transactions.
- * @param {*} n Number of sequential transactions to return.
- * @return {*} A list of sequential transactions.
+ * @param {number} n Number of sequential transactions to return.
+ * @param {number} blockNum Block number for the transactions.
+ * @return {Array<SignedTransaction>} A list of sequential transactions.
  */
 const getSequentialTxs = (n, blockNum) => {
   let txs = []
@@ -115,35 +117,43 @@ const getSequentialTxs = (n, blockNum) => {
 
 /**
  * Returns a transaction generated from a fuzzed encoding.
- * @param {*} n Number of sequential transactions to return.
- * @return {*} A list of sequential transactions.
+ * @param {number} blockNum Block in which the tx will be included.
+ * @param {string} sender Address of the sender.
+ * @param {string} recipient Address of the recipient.
+ * @param {number} numTransfers Number of transfers in the transaction.
+ * @return {UnsignedTransaction} The generated transaction.
  */
-
-function genRandomTX (blockNum, senderAddress, recipientAddress, numTransfers) {
-  let randomTransfers = []
+function getRandomTx (blockNum, sender, recipient, numTransfers) {
+  let transfers = []
   for (let i = 0; i < numTransfers; i++) {
-    // fuzz a random encoding to test decoding with
     let randomVals = ''
     for (let i = 0; i < 28; i++) {
       // random start, end, type = 12+12+4 bytes
       const randHex = Math.floor(Math.random() * 256)
       randomVals += new BigNum(randHex, 10).toString(16, 2)
     }
-    randomTransfers +=
-      senderAddress.slice(2) + recipientAddress.slice(2) + randomVals
-    // can't have invalid addresses so ignore this partthe 33rd byte is the numTransfers which isn't random--it's 4
+
+    transfers.push(
+      new Transfer({
+        start: randomVals.slice(0, 12),
+        end: randomVals.slice(12, 24),
+        token: randomVals.slice(24, 28),
+        sender: sender,
+        recipient: recipient
+      })
+    )
   }
-  return (
-    new BigNum(blockNum).toString(16, 8) +
-    new BigNum(numTransfers).toString(16, 2) +
-    randomTransfers
-  )
+
+  return new UnsignedTransaction({
+    block: blockNum,
+    transfers: transfers
+  })
 }
 
 module.exports = {
   int32ToHex,
   getSequentialTxs,
-  genRandomTX,
+  getRandomTx,
   web3Utils,
   signatureToString,
   stringToSignature,
