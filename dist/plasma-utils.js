@@ -46243,9 +46243,7 @@ module.exports = {
 }
 
 },{"./models":417,"./schemas":428}],416:[function(require,module,exports){
-(function (Buffer){
 const web3Utils = require('../../utils/web3')
-const miscUtils = require('../../utils/misc')
 
 /**
  * Base model that makes use of a particular schema.
@@ -46270,17 +46268,6 @@ class BaseModel {
   }
 
   _parseArgs (args) {
-    if (Buffer.isBuffer(args)) {
-      args = args.toString('hex')
-    }
-    if (miscUtils.isString(args)) {
-      args = miscUtils.remove0x(args)
-      args = this.schema.decode(args)
-    }
-    if (miscUtils.isObject(args)) {
-      args = Object.assign({}, args)
-    }
-
     args = this.schema.cast(args)
     this.schema.validate(args)
 
@@ -46290,9 +46277,7 @@ class BaseModel {
 
 module.exports = BaseModel
 
-}).call(this,{"isBuffer":require("../../../node_modules/is-buffer/index.js")})
-
-},{"../../../node_modules/is-buffer/index.js":134,"../../utils/misc":438,"../../utils/web3":440}],417:[function(require,module,exports){
+},{"../../utils/web3":440}],417:[function(require,module,exports){
 const Signature = require('./signature')
 const Transfer = require('./transfer')
 const SignedTransaction = require('./transaction').SignedTransaction
@@ -46724,7 +46709,9 @@ class SchemaNumber extends BaseSchemaType {
 module.exports = SchemaNumber
 
 },{"./base-schema-type":424,"bn.js":33}],427:[function(require,module,exports){
+(function (Buffer){
 const BigNum = require('bn.js')
+const miscUtils = require('../utils/misc')
 
 /**
  * Class used to define schemas.
@@ -46769,6 +46756,19 @@ class Schema {
    * @return {*} The modified object.
    */
   cast (object) {
+    // Convert buffers to hex strings.
+    if (Buffer.isBuffer(object)) {
+      object = object.toString('hex')
+    }
+    // Convert hex strings to objects.
+    if (miscUtils.isString(object)) {
+      object = miscUtils.remove0x(object)
+      object = this.decode(object)
+    }
+
+    // Work on a copy of the object.
+    object = Object.assign({}, object)
+
     let ret = {}
     for (let key in this.fields) {
       let field = this.fields[key]
@@ -46855,7 +46855,9 @@ class Schema {
 
 module.exports = Schema
 
-},{"bn.js":33}],428:[function(require,module,exports){
+}).call(this,{"isBuffer":require("../../node_modules/is-buffer/index.js")})
+
+},{"../../node_modules/is-buffer/index.js":134,"../utils/misc":438,"bn.js":33}],428:[function(require,module,exports){
 const SignatureSchema = require('./signature')
 const TransferSchema = require('./transfer')
 const UnsignedTransactionSchema = require('./transaction')
@@ -46875,7 +46877,7 @@ module.exports = {
 
 },{"./signature":429,"./transaction":431,"./transaction-proof":430,"./transfer":433,"./transfer-proof":432}],429:[function(require,module,exports){
 const Schema = require('../schema')
-const Bytes = require('../schema-types/bytes')
+const Bytes = require('../schema-types/buffer')
 
 const SignatureSchema = new Schema({
   r: {
@@ -46897,7 +46899,7 @@ const SignatureSchema = new Schema({
 
 module.exports = SignatureSchema
 
-},{"../schema":427,"../schema-types/bytes":425}],430:[function(require,module,exports){
+},{"../schema":427,"../schema-types/buffer":425}],430:[function(require,module,exports){
 const Schema = require('../schema')
 const TransferProofSchema = require('./transfer-proof')
 
@@ -46948,7 +46950,7 @@ module.exports = {
 },{"../schema":427,"../schema-types/number":426,"./signature":429,"./transfer":433}],432:[function(require,module,exports){
 const Schema = require('../schema')
 const Number = require('../schema-types/number')
-const Bytes = require('../schema-types/bytes')
+const Bytes = require('../schema-types/buffer')
 const SignatureSchema = require('./signature')
 
 const TransferProofSchema = new Schema({
@@ -46971,7 +46973,7 @@ const TransferProofSchema = new Schema({
 
 module.exports = TransferProofSchema
 
-},{"../schema":427,"../schema-types/bytes":425,"../schema-types/number":426,"./signature":429}],433:[function(require,module,exports){
+},{"../schema":427,"../schema-types/buffer":425,"../schema-types/number":426,"./signature":429}],433:[function(require,module,exports){
 const Schema = require('../schema')
 const Address = require('../schema-types/address')
 const Number = require('../schema-types/number')

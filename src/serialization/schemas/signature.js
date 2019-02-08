@@ -1,5 +1,5 @@
 const Schema = require('../schema')
-const Bytes = require('../schema-types/bytes')
+const Bytes = require('../schema-types/buffer')
 
 const SignatureSchema = new Schema({
   r: {

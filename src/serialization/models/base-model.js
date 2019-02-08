@@ -1,5 +1,4 @@
 const web3Utils = require('../../utils/web3')
-const miscUtils = require('../../utils/misc')
 
 /**
  * Base model that makes use of a particular schema.
@@ -24,17 +23,6 @@ class BaseModel {
   }
 
   _parseArgs (args) {
-    if (Buffer.isBuffer(args)) {
-      args = args.toString('hex')
-    }
-    if (miscUtils.isString(args)) {
-      args = miscUtils.remove0x(args)
-      args = this.schema.decode(args)
-    }
-    if (miscUtils.isObject(args)) {
-      args = Object.assign({}, args)
-    }
-
     args = this.schema.cast(args)
     this.schema.validate(args)
 

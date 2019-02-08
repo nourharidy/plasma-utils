@@ -174,6 +174,16 @@ describe('Serialization', () => {
 
       tx.decoded.should.deep.equal(decodedSignedTransaction)
     })
+
+    it('should be correctly decoded with mixed inputs', () => {
+      const mixed = {
+        ...decodedSignedTransaction,
+        ...{ signatures: [ ethereumSignature ] }
+      }
+      const tx = new SignedTransaction(mixed)
+
+      tx.decoded.should.deep.equal(decodedSignedTransaction)
+    })
   })
 
   describe('TransferProof', () => {

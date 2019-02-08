@@ -1,4 +1,5 @@
 const BigNum = require('bn.js')
+const miscUtils = require('../utils/misc')
 
 /**
  * Class used to define schemas.
@@ -43,6 +44,19 @@ class Schema {
    * @return {*} The modified object.
    */
   cast (object) {
+    // Convert buffers to hex strings.
+    if (Buffer.isBuffer(object)) {
+      object = object.toString('hex')
+    }
+    // Convert hex strings to objects.
+    if (miscUtils.isString(object)) {
+      object = miscUtils.remove0x(object)
+      object = this.decode(object)
+    }
+
+    // Work on a copy of the object.
+    object = Object.assign({}, object)
+
     let ret = {}
     for (let key in this.fields) {
       let field = this.fields[key]

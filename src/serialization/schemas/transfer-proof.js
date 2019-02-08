@@ -1,6 +1,6 @@
 const Schema = require('../schema')
 const Number = require('../schema-types/number')
-const Bytes = require('../schema-types/bytes')
+const Bytes = require('../schema-types/buffer')
 const SignatureSchema = require('./signature')
 
 const TransferProofSchema = new Schema({

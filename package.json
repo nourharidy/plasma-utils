@@ -1,6 +1,6 @@
 {
   "name": "plasma-utils",
-  "version": "0.0.4-beta.1",
+  "version": "0.0.4-beta.2",
   "description": "Core plasma utilities",
   "main": "index.js",
   "scripts": {
