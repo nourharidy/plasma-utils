@@ -7,9 +7,6 @@ It also provides tools for defining your own custom schemas using our encoding s
 
 -----------------------------------------------------------------------------
 
-Schemas
-=======
-
 --------------
 TransferSchema
 --------------
@@ -76,24 +73,45 @@ A `Signature` is a simple representation of an ECDSA signature.
 
 ------------------------------------------------------------------------------
 
------------
-Transaction
------------
+-------------------------
+UnsignedTransactionSchema
+-------------------------
 
 .. code-block:: javascript
 
-    const TransactionSchema = new Schema({
+    const UnsignedTransactionSchema = new Schema({
       block: {
         type: Number,
         length: 4,
         required: true
-      }
-      transfer: {
-        type: TransferRecordSchema
       },
-      signature: {
-        type: SignatureSchema
+      transfers: {
+        type: [TransferSchema]
       }
     })
 
-A `Transaction` is composed of one or more `Transfer` objects and a signature for each transfer.
+An `UnsignedTransactionSchema` is composed of one or more `Transfer` objects.
+
+------------------------------------------------------------------------------
+
+-----------------------
+SignedTransactionSchema
+-----------------------
+
+.. code-block:: javascript
+
+    const SignedTransactionSchema = new Schema({
+      block: {
+        type: Number,
+        length: 4,
+        required: true
+      },
+      transfers: {
+        type: [TransferSchema]
+      },
+      signatures: {
+        type: [SignatureSchema]
+      }
+    })
+
+A `SignedTransactionSchema` is composed of one or more `Transfer` objects and a `Signature` for each `Transfer`.

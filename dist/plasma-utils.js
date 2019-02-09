@@ -46860,8 +46860,7 @@ module.exports = Schema
 },{"../../node_modules/is-buffer/index.js":134,"../utils/misc":438,"bn.js":33}],428:[function(require,module,exports){
 const SignatureSchema = require('./signature')
 const TransferSchema = require('./transfer')
-const UnsignedTransactionSchema = require('./transaction')
-  .UnignedTransactionSchema
+const UnsignedTransactionSchema = require('./transaction').UnsignedTransactionSchema
 const SignedTransactionSchema = require('./transaction').SignedTransactionSchema
 const TransferProofSchema = require('./transfer-proof')
 const TransactionProofSchema = require('./transaction-proof')
@@ -46931,7 +46930,7 @@ const SignedTransactionSchema = new Schema({
   }
 })
 
-const UnignedTransactionSchema = new Schema({
+const UnsignedTransactionSchema = new Schema({
   block: {
     type: Number,
     length: 4,
@@ -46944,7 +46943,7 @@ const UnignedTransactionSchema = new Schema({
 
 module.exports = {
   SignedTransactionSchema,
-  UnignedTransactionSchema
+  UnsignedTransactionSchema
 }
 
 },{"../schema":427,"../schema-types/number":426,"./signature":429,"./transfer":433}],432:[function(require,module,exports){

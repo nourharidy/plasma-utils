@@ -17,7 +17,7 @@ const SignedTransactionSchema = new Schema({
   }
 })
 
-const UnignedTransactionSchema = new Schema({
+const UnsignedTransactionSchema = new Schema({
   block: {
     type: Number,
     length: 4,
@@ -30,5 +30,5 @@ const UnignedTransactionSchema = new Schema({
 
 module.exports = {
   SignedTransactionSchema,
-  UnignedTransactionSchema
+  UnsignedTransactionSchema
 }
